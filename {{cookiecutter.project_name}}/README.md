@@ -49,7 +49,7 @@ You can also provide a specific absolute path to a configuration file via
 the CLI `-c` or `--config` flag. For example:
 
 ```
-{{ cookiecutter.client_name|lower }} -c /path/to/config.toml
+{{ cookiecutter.project_name|lower }} -c /path/to/config.toml
 ```
 
 Please note that if the config file is not found or malformed the application
