@@ -8,14 +8,12 @@ RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 ARG BUILD_DIR=./_build/linux_amd64
 ARG BUILD_NAME={{ cookiecutter.project_name|lower }}
 ARG BUILD_DEST=/usr/local/bin/{{ cookiecutter.project_name|lower }}
-ARG CONFIGPATH=/etc/{{ cookiecutter.client_name|lower }}/{{ cookiecutter.project_name|lower }}
-ARG LOGPATH=/var/log/{{ cookiecutter.client_name|lower }}/{{ cookiecutter.project_name|lower }}
 
 # Copy Binary
 COPY ${BUILD_DIR}/${BUILD_NAME} ${BUILD_DEST}
 
 # Volumes
-VOLUME [${CONFIGPATH}, ${LOGPATH}]
+VOLUME ["/etc/{{ cookiecutter.client_name|lower }}/{{ cookiecutter.project_name|lower }}", "/var/log/{{ cookiecutter.client_name|lower }}/{{ cookiecutter.project_name|lower }}"]
 
 # Set our Application Entrypoint
-ENTRYPOINT [$BUILD_NAME]
+ENTRYPOINT ["{{ cookiecutter.project_name|lower }}"]

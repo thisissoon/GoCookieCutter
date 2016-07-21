@@ -17,6 +17,14 @@
 			"versionExact": "v0.10.0"
 		},
 		{
+			"checksumSHA1": "q+u/CabsFcETIh8rfUSvWE7iqJY=",
+			"path": "github.com/Sirupsen/logrus/formatters/logstash",
+			"revision": "4b6ea7319e214d98c938f12692336f7ca9348d6b",
+			"revisionTime": "2016-03-17T14:11:10Z",
+			"version": "v0.10.0",
+			"versionExact": "v0.10.0"
+		},
+		{
 			"checksumSHA1": "xgjI2W3RGiQwNlxsOW2V9fJ9kaM=",
 			"path": "github.com/fsnotify/fsnotify",
 			"revision": "a8a77c9133d2d6fd8334f3260d06f60e8d80a5fb",

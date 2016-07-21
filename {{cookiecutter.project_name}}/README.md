@@ -31,3 +31,26 @@ The `make test` command can also be customised with the following variable overr
 * `TEST_COVERAGE`: This will produce a coverae report (`TEST_COVERAGE=1 make test`)
 
 These can also be combined: `TEST_COVERAGE=1 TEST_VERBOSE=1 make test`
+
+## Configuration
+
+By default the application will look for configuration files in the following locations:
+
+* `/etc/{{ cookiecutter.client_name|lower }}/{{ cookiecutter.project_name|lower }}/config.toml`
+* `$HOME/.config/{{ cookiecutter.client_name|lower }}/{{ cookiecutter.project_name|lower }}/config.toml`
+
+These configuration files **MUST** be in `toml` format.
+
+Please read more about `toml` here: https://github.com/toml-lang/toml
+
+### Specific Configuration File
+
+You can also provide a specific absolute path to a configuration file via
+the CLI `-c` or `--config` flag. For example:
+
+```
+{{ cookiecutter.client_name|lower }} -c /path/to/config.toml
+```
+
+Please note that if the config file is not found or malformed the application
+will fail to start.
