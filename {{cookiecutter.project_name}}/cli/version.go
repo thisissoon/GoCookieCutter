@@ -4,6 +4,7 @@ package cli
 
 import (
 	"fmt"
+
 	"{{ cookiecutter.project_name|lower }}/config"
 
 	"github.com/spf13/cobra"

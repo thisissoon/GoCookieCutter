@@ -1,0 +1,41 @@
+// Test utility helpers for testing Echo web service functionality
+
+package testutil
+
+import (
+	"io"
+
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine"
+	et "github.com/labstack/echo/test"
+)
+
+// A fake echo binder allowing us to mock a binder
+type EchoBinder struct {
+	BindF func(interface{}, echo.Context) error
+}
+
+func (b *EchoBinder) Bind(i interface{}, ctx echo.Context) error {
+	if b.BindF != nil {
+		return b.BindF(i, ctx)
+	}
+
+	return nil
+}
+
+// Constructs a new echo server, returning a request, recorder and context
+// Usage:
+// req, rec, ctx := testutil.EchoRecorder(echo.POST, "/foo", strings.NewReader("foo"), nil)
+// myFooHandler(ctx)
+// fmt.Println(rec.Body.String())
+func EchoRecorder(method, path string, body io.Reader, binder echo.Binder) (engine.Request, *et.ResponseRecorder, echo.Context) {
+	server := echo.New()
+	if binder != nil {
+		server.SetBinder(binder)
+	}
+	req := et.NewRequest(method, path, body)
+	rec := et.NewResponseRecorder()
+	ctx := server.NewContext(req, rec)
+
+	return req, rec, ctx
+}

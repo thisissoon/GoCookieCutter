@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+
 	"{{ cookiecutter.project_name|lower }}/config"
 	"{{ cookiecutter.project_name|lower }}/logger"
 
@@ -35,6 +36,7 @@ func init() {
 	{{ cookiecutter.project_name|lower }}Cmd.PersistentFlags().StringP("verbosity", "v", "", "Log Level Verbosity (debug, info, warn, error)")
 	// Sub Commands (Add more as required)
 	{{ cookiecutter.project_name|lower }}Cmd.AddCommand(versionCmd)
+	{% if cookiecutter.rest_framework == "yes" %}{{ cookiecutter.project_name|lower }}Cmd.AddCommand(runserverCmd){% endif %}
 }
 
 // Configures static parts of the application
