@@ -4,5 +4,6 @@
     "project_human_name": null,
     "description": null,
     "docker_image_name": null,
-    "git_clone_url": null
+    "git_clone_url": null,
+    "rest_framework": ["yes", "no"]
 }
