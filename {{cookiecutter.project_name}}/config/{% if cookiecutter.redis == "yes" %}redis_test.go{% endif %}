@@ -1,0 +1,43 @@
+package config
+
+import (
+	"reflect"
+	"testing"
+
+	redis "gopkg.in/redis.v4"
+
+	"github.com/spf13/viper"
+)
+
+func TestNewRedisConfig(t *testing.T) {
+	tt := []struct {
+		address  string
+		password string
+		db       int
+
+		expected *redis.Options
+	}{
+		{"", "", 0, &redis.Options{Addr: "localhost:6379", Password: "", DB: 0}},
+		{"127.0.0.1:6379", "foo", 1, &redis.Options{Addr: "127.0.0.1:6379", Password: "foo", DB: 1}},
+	}
+
+	for _, tc := range tt {
+		if tc.address != "" {
+			viper.Set(vRedisAddress, tc.address)
+		}
+
+		if tc.password != "" {
+			viper.Set(vRedisPassword, tc.password)
+		}
+
+		if tc.db != 0 {
+			viper.Set(vRedisDB, tc.db)
+		}
+
+		config := NewRedisConfig()
+
+		if !reflect.DeepEqual(tc.expected, config) {
+			t.Errorf("want %#v, got %#v", tc.expected, config)
+		}
+	}
+}
