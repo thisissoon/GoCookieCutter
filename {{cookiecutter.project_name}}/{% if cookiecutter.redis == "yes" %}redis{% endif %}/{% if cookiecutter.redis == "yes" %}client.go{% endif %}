@@ -1,0 +1,52 @@
+// Wrapper around the redis package
+
+package redis
+
+import (
+	"time"
+
+	redis "gopkg.in/redis.v4"
+)
+
+// Convenience access to redis.Nil error
+const Nil = redis.Nil
+
+// An interface the redis client implements
+type Client interface {
+	Get(string) (string, error)
+	Set(string, interface{}, time.Duration) (string, error)
+	Del(...string) (int64, error)
+	Close() error
+}
+
+// Thin wrapper around the redis client, allowing a simplified interface
+// and a mockable redis client via interfaces
+//
+// Extend this type as required to implement more methods of the core
+// redis.v4 commands, remember to update the iterface above
+type client struct {
+	redis *redis.Client
+}
+
+func (c *client) Get(k string) (string, error) {
+	return c.redis.Get(k).Result()
+}
+
+func (c *client) Set(k string, v interface{}, expr time.Duration) (string, error) {
+	return c.redis.Set(k, v, expr).Result()
+}
+
+func (c *client) Del(k ...string) (int64, error) {
+	return c.redis.Del(k...).Result()
+}
+
+func (c *client) Close() error {
+	return c.redis.Close()
+}
+
+// Returns a new redis client wrapper
+func NewClient(opt *redis.Options) Client {
+	return &client{
+		redis: redis.NewClient(opt),
+	}
+}

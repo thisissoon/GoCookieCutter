@@ -9,6 +9,9 @@ import (
 	"{{ cookiecutter.project_name|lower }}/config"
 	"{{ cookiecutter.project_name|lower }}/hal"
 	"{{ cookiecutter.project_name|lower }}/logger"
+    {%- if cookiecutter.redis == "yes" %}
+	"{{ cookiecutter.project_name|lower }}/redis"
+    {%- endif %}
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/fasthttp"
@@ -20,6 +23,10 @@ var c config.ServerConfig
 // Always initialise an Echo instance
 func New() *echo.Echo {
 	server := echo.New()
+    {%- if cookiecutter.redis == "yes" %}
+	// Redis Middleware
+	server.Use(redis.Middleware(config.NewRedisConfig()))
+    {% endif -%}
 	// Add healthcheck handler
 	server.GET("/__healthcheck__", healthcheckHandler)
 	// Set default error handler
