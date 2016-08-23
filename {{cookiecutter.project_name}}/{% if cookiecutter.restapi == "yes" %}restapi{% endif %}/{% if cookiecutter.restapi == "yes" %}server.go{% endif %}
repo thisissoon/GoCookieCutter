@@ -1,0 +1,82 @@
+// REST API Server
+
+package restapi
+
+import (
+	"fmt"
+	"net/http"
+
+	"{{ cookiecutter.project_name|lower }}/config"
+	"{{ cookiecutter.project_name|lower }}/logger"
+	"{{ cookiecutter.project_name|lower }}/restapi/errors"
+	"{{ cookiecutter.project_name|lower }}/restapi/handlers"
+	"{{ cookiecutter.project_name|lower }}/restapi/handlers/v1handlers"
+    {%- if cookiecutter.redis == "yes" %}
+	"{{ cookiecutter.project_name|lower }}/restapi/middleware"
+    {%- endif %}
+
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine/fasthttp"
+	"github.com/nvellon/hal"
+)
+
+type RestSever struct {
+	Config config.ServerConfig
+
+	echoServer *echo.Echo
+}
+
+func (s *RestSever) Run() {
+	logger.Fields(logger.F{"config": s.Config}).Info("Starting Web Server")
+	s.echoServer.Run(fasthttp.New(fmt.Sprintf("%s:%d", s.Config.Bind, s.Config.Port)))
+}
+
+// Always initialise an Echo instance
+func New(c config.ServerConfig) *RestSever {
+	server := echo.New()
+	// Add healthcheck handler
+	server.GET("/__healthcheck__", handlers.Healthcheck)
+	// Add V1 Routes
+	v1handlers.AddRoutes(server)
+    {%- if cookiecutter.redis == "yes" %}
+	// Redis Middleware
+	server.Use(middleware.RedisClient(config.NewRedisConfig()))
+    {% endif -%}
+	// Set default error handler
+	server.SetHTTPErrorHandler(errorHandler)
+	return &RestSever{
+		Config:     c,
+		echoServer: server,
+	}
+}
+
+// Common error handler func that returns proper formatted HAL documents
+func errorHandler(err error, ctx echo.Context) {
+	switch err.(type) {
+	// Errors thrown by echo
+	case *echo.HTTPError:
+		handleEchoError(err.(*echo.HTTPError), ctx)
+	case *errors.Error:
+		ctx.JSON(err.(*errors.Error).Code, hal.NewResource(err, ctx.Request().URI()))
+	// Catch anything else
+	default:
+		logger.Error("%s", err)
+		ctx.JSON(
+			http.StatusInternalServerError,
+			hal.NewResource(&errors.Error{
+				Message: "Uncaught unexpected error"},
+				ctx.Request().URI()))
+	}
+}
+
+func handleEchoError(err *echo.HTTPError, ctx echo.Context) {
+	uri := ctx.Request().URI()
+	switch err.Code {
+	case http.StatusNotFound:
+		ctx.JSON(http.StatusNotFound, hal.NewResource(errors.NotFound, uri))
+	default:
+		logger.Error("%s", err)
+		err := &errors.Error{Code: err.Code, Message: err.Message}
+		ctx.JSON(err.Code, hal.NewResource(err, uri))
+	}
+}

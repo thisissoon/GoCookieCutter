@@ -1,9 +1,11 @@
-// Common HAL Formatted Error Handlers
+// Error types that can be passed directly into HAL responses
 
-package hal
+package errors
 
 import (
 	"errors"
+	"fmt"
+	"net/http"
 	"reflect"
 	"strings"
 
@@ -11,14 +13,35 @@ import (
 	"github.com/nvellon/hal"
 )
 
-// Common 500 error response
-var EDefaultError = &Error{
-	Message: "An unexpected error has occured",
+// Common Errors
+var (
+	// Not Found Error
+	NotFound = &Error{
+		Code:    http.StatusNotFound,
+		Message: "This is not the resource you are looking for",
+	}
+	// Internal Server Error
+	ServerError = &Error{
+		Code:    http.StatusInternalServerError,
+		Message: "An unexpected error occurred",
+	}
+)
+
+// A HAL error type that satisfies the nvellon/hal mapper interface
+// and the standard go error interface, this allows us to produce
+// hal formatted error responses
+type Error struct {
+	Code     int      `json:"code"`
+	Message  string   `json:"message"`
+	ErrorMap ErrorMap `json:"errors,omitempty"`
 }
 
-// Common 404 error response
-var ENotFound = &Error{
-	Message: "This is not the resource you are looking for",
+func (e *Error) Error() string {
+	return e.Message
+}
+
+func (e *Error) GetMap() hal.Entry {
+	return hal.Entry{"_errors": e}
 }
 
 // This type allows us to produce a map of specifc errors, this
@@ -34,20 +57,21 @@ func (m ErrorMap) Delete(field string) {
 	delete(m, field)
 }
 
-// A HAL error type that satisfies the nvellon/hal mapper interface
-// and the standard go error interface, this allows us to produce
-// hal formatted error responses
-type Error struct {
-	Message  string   `json:"message"`
-	ErrorMap ErrorMap `json:"errors,omitempty"`
+// Unauthorized
+func Unauthorized(msg string, args ...interface{}) error {
+	return &Error{
+		Code:    http.StatusUnauthorized,
+		Message: fmt.Sprintf(msg, args...),
+	}
 }
 
-func (e *Error) Error() string {
-	return e.Message
-}
-
-func (e *Error) GetMap() hal.Entry {
-	return hal.Entry{"_errors": e}
+// errors.UnprocessableEntity(i, err)
+func UnprocessableEntity(i interface{}, err error) error {
+	return &Error{
+		Code:     422,
+		Message:  "Validation error",
+		ErrorMap: ValidationErrorMap(i, err),
+	}
 }
 
 // Constructs an ErrorMap from govalidator validation errors, if json tags also exist

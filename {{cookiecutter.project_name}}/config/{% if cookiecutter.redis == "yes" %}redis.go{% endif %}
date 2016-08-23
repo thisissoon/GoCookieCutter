@@ -1,8 +1,9 @@
 package config
 
 import (
+	"{{ cookiecutter.project_name|lower }}/redis"
+
 	"github.com/spf13/viper"
-	redis "gopkg.in/redis.v4"
 )
 
 // [redis]

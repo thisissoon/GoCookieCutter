@@ -1,4 +1,4 @@
-package server
+package handlers
 
 import (
 	"testing"
@@ -17,7 +17,7 @@ func TestHelathcheckHandler(t *testing.T) {
 
 	for _, tc := range tt {
 		_, rec, ctx := testutil.EchoRecorder(echo.GET, "/__healthcheck__", nil, nil)
-		healthcheckHandler(ctx)
+		Healthcheck(ctx)
 
 		if tc.expected != rec.Body.String() {
 			t.Errorf("wanted %s got %s", tc.expected, rec.Body.String())

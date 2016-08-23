@@ -36,7 +36,7 @@ func init() {
 	{{ cookiecutter.project_name|lower }}Cmd.PersistentFlags().StringP("verbosity", "v", "", "Log Level Verbosity (debug, info, warn, error)")
 	// Sub Commands (Add more as required)
 	{{ cookiecutter.project_name|lower }}Cmd.AddCommand(versionCmd)
-	{% if cookiecutter.rest_framework == "yes" %}{{ cookiecutter.project_name|lower }}Cmd.AddCommand(runserverCmd){% endif %}
+	{% if cookiecutter.restapi == "yes" %}{{ cookiecutter.project_name|lower }}Cmd.AddCommand(runrestapiCmd){% endif %}
 }
 
 // Configures static parts of the application

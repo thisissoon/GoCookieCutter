@@ -1,4 +1,4 @@
-package redis
+package middleware
 
 import (
 	"errors"
@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	redis "gopkg.in/redis.v4"
+	"{{ cookiecutter.project_name|lower }}/redis"
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/test"
@@ -17,7 +17,7 @@ func TestMiddleware(t *testing.T) {
 	req := test.NewRequest(echo.GET, "/", nil)
 	rec := test.NewResponseRecorder()
 	ctx := e.NewContext(req, rec)
-	handler := Middleware(&redis.Options{})(func(ctx echo.Context) error {
+	handler := RedisClient(&redis.Options{})(func(ctx echo.Context) error {
 		return ctx.String(http.StatusOK, "test")
 	})
 
@@ -29,9 +29,9 @@ func TestMiddleware(t *testing.T) {
 	}
 }
 
-func TestFromContext(t *testing.T) {
+func TestRedisFromContext(t *testing.T) {
 	tt := []struct {
-		client Client
+		client redis.Client
 
 		expectedClient Client
 		expectedErr    error
@@ -42,8 +42,8 @@ func TestFromContext(t *testing.T) {
 			errors.New("<nil> is not a Client"),
 		},
 		{
-			&client{},
-			&client{},
+			redis.NewClient(nil),
+			redis.NewClient(nil),
 			nil,
 		},
 	}

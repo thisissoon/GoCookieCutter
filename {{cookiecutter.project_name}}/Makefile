@@ -13,7 +13,6 @@ TEST_COVERAGE	?= 0
 
 #
 # Testing
-# Redis is required to run the test suite against
 #
 
 test: deps

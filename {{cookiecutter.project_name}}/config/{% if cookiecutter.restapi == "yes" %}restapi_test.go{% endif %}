@@ -7,27 +7,27 @@ import (
 	"github.com/spf13/viper"
 )
 
-func TestNewServerConfig(t *testing.T) {
+func TestRestAPI(t *testing.T) {
 	tt := []struct {
 		bind string
 		port int
 
-		expected ServerConfig
+		expected RestAPI
 	}{
-		{"", 0, ServerConfig{"", 5000}},
-		{"127.0.0.1", 8000, ServerConfig{"127.0.0.1", 8000}},
+		{"", 0, RestAPI{"", 5000}},
+		{"127.0.0.1", 8000, RestAPI{"127.0.0.1", 8000}},
 	}
 
 	for _, tc := range tt {
 		if tc.bind != "" {
-			viper.Set(vServerBind, tc.bind)
+			viper.Set(vRestAPIBind, tc.bind)
 		}
 
 		if tc.port != 0 {
-			viper.Set(vServerPort, tc.port)
+			viper.Set(vRestAPIPort, tc.port)
 		}
 
-		config := NewServerConfig()
+		config := NewRestAPIConfig()
 
 		if !reflect.DeepEqual(tc.expected, config) {
 			t.Errorf("want %#v, got %#v", tc.expected, config)
