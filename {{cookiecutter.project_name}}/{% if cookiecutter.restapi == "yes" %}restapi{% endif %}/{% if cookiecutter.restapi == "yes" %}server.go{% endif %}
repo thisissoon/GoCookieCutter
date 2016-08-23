@@ -21,7 +21,7 @@ import (
 )
 
 type RestSever struct {
-	Config config.ServerConfig
+	Config config.RestAPI
 
 	echoServer *echo.Echo
 }
@@ -32,7 +32,7 @@ func (s *RestSever) Run() {
 }
 
 // Always initialise an Echo instance
-func New(c config.ServerConfig) *RestSever {
+func New(c config.RestAPI) *RestSever {
 	server := echo.New()
 	// Add healthcheck handler
 	server.GET("/__healthcheck__", handlers.Healthcheck)
