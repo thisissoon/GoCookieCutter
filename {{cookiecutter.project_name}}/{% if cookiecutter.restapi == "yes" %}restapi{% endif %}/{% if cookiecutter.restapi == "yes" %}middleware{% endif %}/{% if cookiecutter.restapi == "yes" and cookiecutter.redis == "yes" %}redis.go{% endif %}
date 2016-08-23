@@ -1,18 +1,18 @@
-// Utilites for working with redis within the echo framework
+// Redis Echo Middleare
 
-package redis
+package middleware
 
 import (
 	"fmt"
 	"reflect"
 
-	redis "gopkg.in/redis.v4"
+	"{{ cookiecutter.project_name|lower }}/redis"
 
 	"github.com/labstack/echo"
 )
 
 // Returns a redis client from a given echo context
-func FromContext(ctx echo.Context) (Client, error) {
+func RedisFromCtx(ctx echo.Context) (redis.Client, error) {
 	v := ctx.Get("redis.client")
 	client, ok := v.(Client)
 	if !ok {
@@ -24,11 +24,11 @@ func FromContext(ctx echo.Context) (Client, error) {
 
 // Opens a redis connection to the configured redis server
 // and places the connection on the request context
-func Middleware(config *redis.Options) echo.MiddlewareFunc {
+func RedisClient(config *redis.Options) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
 			// Create a new redis client
-			client := NewClient(config)
+			client := redis.NewClient(config)
 			defer client.Close()
 
 			// Add the client to the session, and serve the next handler

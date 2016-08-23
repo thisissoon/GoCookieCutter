@@ -1,0 +1,17 @@
+package cli
+
+import (
+	"{{ cookiecutter.project_name|lower }}/config"
+	"{{ cookiecutter.project_name|lower }}/restapi"
+
+	"github.com/spf13/cobra"
+)
+
+var runrestapiCmd = &cobra.Command{
+	Use:   "runrestapi",
+	Short: "Run the user email service REST API",
+	Run: func(cmd *cobra.Command, args []string) {
+		s := restapi.New(config.NewRestAPIConfig())
+		s.Run()
+	},
+}

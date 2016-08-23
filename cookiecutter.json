@@ -5,6 +5,6 @@
     "description": null,
     "docker_image_name": null,
     "git_clone_url": null,
-    "rest_framework": ["yes", "no"],
+    "restapi": ["yes", "no"],
     "redis": ["yes", "no"]
 }

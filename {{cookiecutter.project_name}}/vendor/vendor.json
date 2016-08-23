@@ -2,7 +2,7 @@
     "comment": "{{ cookiecutter.client_name }} {{ cookiecutter.project_human_name }}",
     "ignore": "test",
     "package": [
-        {%- if cookiecutter.rest_framework == "yes" %}
+        {%- if cookiecutter.restapi == "yes" %}
         {
             "path": "context",
             "revision": ""

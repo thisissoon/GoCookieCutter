@@ -1,0 +1,18 @@
+// Example Handler
+
+package v1handlers
+
+import (
+	"net/http"
+
+	"github.com/labstack/echo"
+	"github.com/nvellon/hal"
+)
+
+// GET /v1/example
+// TODO: Delete Me
+func exampleHandler(ctx echo.Context) error {
+	uri := ctx.Request().URI()
+	resource := hal.NewResource(struct{}{}, uri)
+	return ctx.JSON(http.StatusOK, resource)
+}

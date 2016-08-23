@@ -1,0 +1,15 @@
+// Routing URL Paths to Echo Handlers
+
+package v1handlers
+
+import (
+	"github.com/labstack/echo"
+)
+
+// Creates a /v1 group and appends routes to that group
+// Pass in global middleare to be used for this group as required
+func AddRoutes(s *echo.Echo, m ...echo.MiddlewareFunc) {
+	group := s.Group("/v1", m...)
+    // TODO: Delete Me
+	group.GET("/example", exampleHandler) // GET /v1/example
+}

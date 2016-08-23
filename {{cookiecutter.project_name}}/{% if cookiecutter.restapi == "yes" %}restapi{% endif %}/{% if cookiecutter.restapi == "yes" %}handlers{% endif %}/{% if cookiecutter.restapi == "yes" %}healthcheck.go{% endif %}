@@ -1,24 +1,25 @@
 // Default HTTP Handlers serving common routes
 
-package server
+package handlers
 
 import (
 	"net/http"
 
 	"{{ cookiecutter.project_name|lower }}/config"
-	"{{ cookiecutter.project_name|lower }}/hal"
 
 	"github.com/labstack/echo"
+	"github.com/nvellon/hal"
 )
 
 // GET /__healthcheck__
 // The Healthcheck endpoint returns the current version with a 200 response
-func healthcheckHandler(ctx echo.Context) error {
-	r := hal.Resource(ctx, struct {
+func Healthcheck(ctx echo.Context) error {
+	uri := ctx.Request().URI()
+	resource := hal.NewResource(struct {
 		Version string `json:"version"`
 	}{
 		Version: config.Version(),
-	})
+	}, uri)
 
-	return hal.Response(http.StatusOK, ctx, r)
+	return ctx.JSON(http.StatusOK, resource)
 }

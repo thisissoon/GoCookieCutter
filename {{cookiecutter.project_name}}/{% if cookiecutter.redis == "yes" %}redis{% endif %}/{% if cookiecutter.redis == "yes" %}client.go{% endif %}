@@ -45,8 +45,12 @@ func (c *client) Close() error {
 }
 
 // Returns a new redis client wrapper
-func NewClient(opt *redis.Options) Client {
+func NewClient(opt *Options) Client {
+	options := &redis.Options{}
+	if opts != nil {
+		options = opts.redisOpt()
+	}
 	return &client{
-		redis: redis.NewClient(opt),
+		redis: redis.NewClient(options),
 	}
 }
