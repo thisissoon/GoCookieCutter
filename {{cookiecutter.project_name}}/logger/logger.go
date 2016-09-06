@@ -84,30 +84,88 @@ func (l *Logger) Fields(f F) *Logger {
 
 // Log a error message
 // logger.Err("Foo") or logger.Err("%s", "bar")
-func Error(s string, v ...interface{}) { log.Error(s, v...) }
-func (l *Logger) Error(s string, args ...interface{}) {
-	l.entry.Errorf(s, args...)
+func Fatal(msg interface{}, v ...interface{}) { log.Fatal(msg, v...) }
+func (l *Logger) Fatal(msg interface{}, args ...interface{}) {
+	str, ok := msg.(string)
+	if !ok {
+		args = append([]interface{}{msg}, args...)
+		l.entry.Fatal(args...)
+	} else {
+		l.entry.Fatalf(str, args...)
+	}
+}
+
+// Log a error message
+// logger.Err("Foo") or logger.Err("%s", "bar")
+func Error(msg interface{}, v ...interface{}) { log.Error(msg, v...) }
+func (l *Logger) Error(msg interface{}, args ...interface{}) {
+	str, ok := msg.(string)
+	if !ok {
+		args = append([]interface{}{msg}, args...)
+		l.entry.Error(args...)
+	} else {
+		l.entry.Errorf(str, args...)
+	}
 }
 
 // Log a warn message
 // logger.Warn("Foo") or logger.Warn("foo: %s", "bar")
-func Warn(s string, v ...interface{}) { log.Warn(s, v...) }
-func (l *Logger) Warn(s string, args ...interface{}) {
-	l.entry.Warnf(s, args...)
+func Warn(msg interface{}, v ...interface{}) { log.Warn(msg, v...) }
+func (l *Logger) Warn(msg interface{}, args ...interface{}) {
+	str, ok := msg.(string)
+	if !ok {
+		args = append([]interface{}{msg}, args...)
+		l.entry.Warn(args...)
+	} else {
+		l.entry.Warnf(str, args...)
+	}
 }
 
 // Log an info level message
 // logger.Info("Foo") or logger.Info("foo: %s", "bar")
-func Info(s string, v ...interface{}) { log.Info(s, v...) }
-func (l *Logger) Info(s string, args ...interface{}) {
-	l.entry.Infof(s, args...)
+func Info(msg interface{}, v ...interface{}) { log.Info(msg, v...) }
+func (l *Logger) Info(msg interface{}, args ...interface{}) {
+	str, ok := msg.(string)
+	if !ok {
+		args = append([]interface{}{msg}, args...)
+		l.entry.Info(args...)
+	} else {
+		l.entry.Infof(str, args...)
+	}
 }
 
 // Log a debug message
 // logger.Debug("Foo") or logger.Debug("foo: %s", "bar")
-func Debug(s string, v ...interface{}) { log.Debug(s, v...) }
-func (l *Logger) Debug(s string, args ...interface{}) {
-	l.entry.Debugf(s, args...)
+func Debug(msg interface{}, v ...interface{}) { log.Debug(msg, v...) }
+func (l *Logger) Debug(msg interface{}, args ...interface{}) {
+	str, ok := msg.(string)
+	if !ok {
+		args = append([]interface{}{msg}, args...)
+		l.entry.Debug(args...)
+	} else {
+		l.entry.Debugf(str, args...)
+	}
+}
+
+// Common Logging Interface
+func Print(v ...interface{}) { log.Print(v...) }
+func (l *Logger) Print(v ...interface{}) {
+	l.entry.Info(v...)
+}
+
+func Printf(format string, v ...interface{}) { log.Printf(format, v...) }
+func (l *Logger) Printf(format string, v ...interface{}) {
+	l.entry.Infof(format, v...)
+}
+
+func Println(v ...interface{}) { log.Println(v...) }
+func (l *Logger) Println(v ...interface{}) {
+	l.entry.Infoln(v...)
+}
+
+func Fatalf(format string, v ...interface{}) { log.Fatalf(format, v...) }
+func (l *Logger) Fatalf(format string, v ...interface{}) {
+	l.entry.Errorf(format, v...)
 }
 
 // Sets the logging verbosity level
@@ -141,6 +199,11 @@ func (l *Logger) SetLogstashFormat(t string) {
 	l.entry.Logger.Formatter = &logstash.LogstashFormatter{
 		Type: t,
 	}
+}
+
+func SetPlainTextFormat() { log.SetPlainTextFormat() }
+func (l *Logger) SetPlainTextFormat() {
+	l.entry.Logger.Formatter = &logrus.TextFormatter{}
 }
 
 // Sets the logger to always log the version number
@@ -191,9 +254,15 @@ func (l *Logger) DisableStdOut() {
 	l.entry.Logger.Out = ioutil.Discard
 }
 
-// Simply returns the current log instance
-func Writer() *io.PipeWriter {
-	return log.entry.Logger.Writer()
+// Disables logging to stdout
+func EnableStdOut() { log.EnableStdOut() }
+func (l *Logger) EnableStdOut() {
+	l.entry.Logger.Out = os.Stderr
+}
+
+// Returns the current globally scoped logger
+func Log() *Logger {
+	return log
 }
 
 // Constructor
