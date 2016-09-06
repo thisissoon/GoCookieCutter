@@ -3,6 +3,7 @@ package config
 import (
 	"reflect"
 	"testing"
+
 	"{{ cookiecutter.project_name|lower }}/logger"
 
 	"github.com/spf13/viper"
@@ -115,38 +116,34 @@ func TestNewLoggerConfig(t *testing.T) {
 			},
 		},
 	}
-
-	for _, tc := range tt {
-		if tc.level != "" {
-			viper.Set(VLOGGER_LEVEL, tc.level)
-		}
-
-		if tc.logstash {
-			viper.Set(VLOGGER_LOGSTASH, true)
-		}
-
-		if tc.logstash_type != "" {
-			viper.Set(VLOGGER_LOGSTASH_TYPE, tc.logstash_type)
-		}
-
-		if tc.logfile != "" {
-			viper.Set(VLOGGER_LOGFILE, tc.logfile)
-		}
-
-		if tc.disableStdOut {
-			viper.Set(VLOGGER_DISABLE_STDOUT, tc.disableStdOut)
-		}
-
-		if tc.version != "" {
-			version = tc.version
-		}
-
-		c := NewLoggerConfig()
-		if !reflect.DeepEqual(tc.expected, c) {
-			t.Errorf("Unexpected logger config: want %#v, got %#v", tc.expected, c)
-		}
-
-		version = ""
-		viper.Reset()
+	for i, tc := range tt {
+		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+			defer func() {
+				version = ""
+				viper.Reset()
+			}()
+			if tc.level != "" {
+				viper.Set(VLOGGER_LEVEL, tc.level)
+			}
+			if tc.logstash {
+				viper.Set(VLOGGER_LOGSTASH, true)
+			}
+			if tc.logstash_type != "" {
+				viper.Set(VLOGGER_LOGSTASH_TYPE, tc.logstash_type)
+			}
+			if tc.logfile != "" {
+				viper.Set(VLOGGER_LOGFILE, tc.logfile)
+			}
+			if tc.disableStdOut {
+				viper.Set(VLOGGER_DISABLE_STDOUT, tc.disableStdOut)
+			}
+			if tc.version != "" {
+				version = tc.version
+			}
+			c := NewLoggerConfig()
+			if !reflect.DeepEqual(tc.expected, c) {
+				t.Errorf("Unexpected logger config: want %#v, got %#v", tc.expected, c)
+			}
+		})
 	}
 }

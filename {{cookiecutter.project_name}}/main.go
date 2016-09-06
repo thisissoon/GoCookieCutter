@@ -4,6 +4,7 @@ package main
 
 import (
 	"os"
+
 	"{{ cookiecutter.project_name|lower }}/cli"
 	"{{ cookiecutter.project_name|lower }}/logger"
 )
