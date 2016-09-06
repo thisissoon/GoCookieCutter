@@ -22,15 +22,26 @@ These steps will describe how to setup this project for active development. Adju
 
 ### Testing
 
-The application has a comprohensive test suite. To run the test suite simply
-call `make test`.
+The application has a comprohensive test suite covering unit and integration tests.
 
-The `make test` command can also be customised with the following variable overrides:
+#### Test Enviornment Variables
 
-* `TEST_VERBOSE`: This will print verbose test output: (`TEST_VERBOSE=1 make test`)
-* `TEST_COVERAGE`: This will produce a coverae report (`TEST_COVERAGE=1 make test`)
+The test suite supports the following environment variables:
 
-These can also be combined: `TEST_COVERAGE=1 TEST_VERBOSE=1 make test`
+* `VERBOSE`: This will print verbose test output: (`VERBOSE=1 make test`)
+
+#### Coverage Reports
+
+Test coverage reports are generated in the `.cover` directory. Here you will find
+`cover.out` containing the raw line count coverage report and `cover.html` containing
+a `html` generated report which can be viewed in your browser. On OSX you can use the
+`open` command:
+
+```
+open .cover/cover.html
+```
+
+You will also find each individual packages line count coverage file.
 
 ## Configuration
 
