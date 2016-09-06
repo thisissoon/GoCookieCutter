@@ -35,6 +35,7 @@ generate_cover_data() {
 
     echo "mode: $mode" >"$profile"
     grep -h -v "^mode:" "$workdir"/*.cover >>"$profile"
+    go tool cover -html="$profile" -o "$workdir"/cover.html
 }
 
 show_cover_report() {

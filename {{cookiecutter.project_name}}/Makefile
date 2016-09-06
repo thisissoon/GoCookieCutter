@@ -2,42 +2,33 @@
 # Application Makefile
 #
 
-VERSION			?= $(shell git rev-parse --short HEAD)
+VERSION			?= $(shell git rev-parse HEAD)
 BUILD_DIR		?= ./.build
 BUILD_NAME		?= {{ cookiecutter.project_name }}
 BUILD_FLAGS		?= -ldflags "-X {{ cookiecutter.project_name }}/config.version=${VERSION}"
-DOCKER_IMAGE	?= {{ cookiecutter.docker_image_name }}
+DOCKER_IMAGE	?= registry.soon.build/crest/studentprocessorsvc
 DOCKER_TAG		?= latest
-TEST_VERBOSE	?= 0
-TEST_COVERAGE	?= 0
+TEST_ENVS 		?=
+TEST_FLAGS 		?=
+
+ifdef VERBOSE
+ifeq ($(VERBOSE),1)
+TEST_FLAGS += -v
+endif
+endif
 
 #
 # Testing
 #
 
-test: deps
-ifeq ($(TEST_VERBOSE),1)
-ifeq ($(TEST_COVERAGE),1)
-	./test.sh -v --html
-else
-	./test.sh -v
-endif
-else
-ifeq ($(TEST_COVERAGE),1)
-	./test.sh --html
-else
-	./test.sh
-endif
-endif
+test:
+	$(TEST_ENVS) ./test.sh$(TEST_FLAGS)
 
 #
 # Build all binaries
 #
 
-all: deps test build_linux build_osx
-
-deps:
-	govendor sync
+all: test build_linux build_osx
 
 #
 # Linux Build
@@ -47,7 +38,7 @@ build_linux: build_linux64
 
 build_linux64:
 	mkdir -p ${BUILD_DIR}/linux_amd64
-	GOOS=linux GOARCH=amd64 go build -o ${BUILD_DIR}/linux_amd64/$(BUILD_NAME) ${BUILD_FLAGS}
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${BUILD_DIR}/linux_amd64/$(BUILD_NAME) ${BUILD_FLAGS}
 
 #
 # OSX Build
@@ -57,7 +48,7 @@ build_osx: build_osx64
 
 build_osx64:
 	mkdir -p ${BUILD_DIR}/darwin_amd64
-	GOOS=darwin GOARCH=amd64 go build -o ${BUILD_DIR}/darwin_amd64/$(BUILD_NAME) ${BUILD_FLAGS}
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ${BUILD_DIR}/darwin_amd64/$(BUILD_NAME) ${BUILD_FLAGS}
 
 #
 # Docker Images
