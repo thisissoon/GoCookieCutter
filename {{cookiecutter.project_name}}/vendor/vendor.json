@@ -1,0 +1,25 @@
+{
+	"comment": "{{cookiecutter.project_human_name}}",
+	"rootPath": "{{cookiecutter.project_name}}",
+	"ignore": "test",
+	"package": [
+		{
+			"path": "github.com/Sirupsen/logrus",
+			"revision": "ba1b36c82c5e05c4f912a88eab0dcd91a171688f",
+			"version": "v0.11.5",
+			"versionExact": "v0.11.5"
+		},
+		{
+			"path": "github.com/spf13/cobra",
+			"revision": "ca57f0f5dba473a8a58765d16d7e811fb8027add"
+		},
+		{
+			"path": "github.com/spf13/viper",
+			"revision": "0967fc9aceab2ce9da34061253ac10fb99bba5b2"
+		},
+		{
+			"path": "github.com/stretchr/testify/assert",
+			"revision": "eb84487caee2d64c96bb5c6afb60fd4f631eb0f0"
+		}
+    ],
+}
