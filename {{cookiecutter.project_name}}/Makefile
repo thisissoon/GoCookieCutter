@@ -29,25 +29,29 @@ LDFLAGS                 ?= "$(BUILD_TIME_LDFLAG) $(BUILD_VERSION_LDFLAG)"
 all: linux darwin
 
 linux:
-    docker run --rm -it -e GOOS=linux -e GOARCH=amd64 -v $(PWD):/go/src/{{cookiecutter.project_name}} $(DOCKER_IMAGE):onbuild build
+	docker run --rm -it -e GOOS=linux -e GOARCH=amd64 -v $(PWD):/go/src/{{cookiecutter.project_name}} $(DOCKER_IMAGE):onbuild build
 
 darwin:
-    docker run --rm -it -e GOOS=darwin -e GOARCH=amd64 -v $(PWD):/go/src/{{cookiecutter.project_name}} $(DOCKER_IMAGE):onbuild build
+	docker run --rm -it -e GOOS=darwin -e GOARCH=amd64 -v $(PWD):/go/src/{{cookiecutter.project_name}} $(DOCKER_IMAGE):onbuild build
 
 build:
-    GOOS=$(GOOS) \
-    GOARCH=$(GOARCH) \
-    CGO_ENABLED=$(CGO_ENABLED) \
-    go build \
-        -v \
-        -ldflags $(LDFLAGS) \
-        -o "$(GOOUTDIR)/$(BIN_NAME)$(BIN_SUFFIX)"
+	GOOS=$(GOOS) \
+	GOARCH=$(GOARCH) \
+	CGO_ENABLED=$(CGO_ENABLED) \
+	go build \
+		-v \
+		-ldflags $(LDFLAGS) \
+		-o "$(GOOUTDIR)/$(BIN_NAME)$(BIN_SUFFIX)"
 
 test:
-    go test -race -v -cover $(shell go list ./... | grep -v ./vendor/)
+	go test -race -v -cover $(shell go list ./... | grep -v ./vendor/)
+
+coverage:
+	./coverage.sh
+	go tool cover -html=coverage.txt
 
 image:
-    docker build --force-rm -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
+	docker build --force-rm -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
 
 onbuild:
-    docker build --force-rm -f Dockerfile.onbuild -t $(DOCKER_IMAGE):onbuild .
+	docker build --force-rm -f Dockerfile.onbuild -t $(DOCKER_IMAGE):onbuild .

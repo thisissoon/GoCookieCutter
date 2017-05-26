@@ -5,6 +5,7 @@ import (
 	"{{cookiecutter.project_name}}/config"
 	"{{cookiecutter.project_name}}/log"
 
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -34,8 +35,8 @@ var rootCmd = &cobra.Command{
 		})
 		// Always log these fields
 		l.PersistentFields(logrus.Fields{
-			"version":   Version(),
-			"buildTime": BuildTime(),
+			"version":   app.Version(),
+			"buildTime": app.BuildTime(),
 		})
 		// Set global logger
 		log.SetGlobalLogger(l)
@@ -62,7 +63,7 @@ func init() {
 		"",
 		"Log Level (debug,info,warn,error)")
 	// Add Sub Commands
-	rootCmd.AddCommand(versionCmd, migrateCmd)
+	rootCmd.AddCommand(versionCmd)
 }
 
 // Execute CLI
