@@ -4,29 +4,38 @@
 
 # Environment Variables
 variables:
-  IMAGE: {{ cookiecutter.docker_image_name }}
-  SRC: src/{{ cookiecutter.project_name|lower }}
+  IMAGE: {{cookiecutter.docker_image}}
+  SRC: src/{{cookiecutter.project_name}}
 
 # Build Stages
 stages:
   - test
+  - build
   - release
 
 # Builds and Tests the Application
 test_job:
   stage: test
-  image: golang:1.6.2-alpine
-  artifacts:
-    paths:
-      - .build/
+  image: golang:{{cookiecutter.go_version}}-alpine
   script:
-    - apk update && apk add ca-certificates openssl openssh make git bash
-    - wget -qO- https://github.com/kardianos/govendor/releases/download/v1.0.3/govendor_linux_386 > $GOPATH/bin/govendor
-    - chmod +x $GOPATH/bin/govendor
-    - mkdir -p $GOPATH/src
-    - ln -s $CI_PROJECT_DIR $GOPATH/$SRC
-    - cd $GOPATH/$SRC
-    - TEST_VERBOSE=1 make test build_linux64
+    - apk update && apk add make bash
+    - mkdir -p $GOPATH/src; ln -s $CI_PROJECT_DIR $GOPATH/$SRC; cd $GOPATH/$SRC
+    - make test
+
+# Build linux binaries
+build_job:
+  stage: build
+  only:
+    - master
+  image: golang:{{cookiecutter.go_version}}-alpine
+  artifacts:
+    expire_in: 24h
+    paths:
+      - ./{{cookiecutter.project_name}}.linux-amd64
+  script:
+    - apk update && apk add make bash
+    - mkdir -p $GOPATH/src; ln -s $CI_PROJECT_DIR $GOPATH/$SRC; cd $GOPATH/$SRC
+    - VERSION=$CI_COMMIT_SHA make linux64
 
 # Release Job
 release_job:
@@ -34,9 +43,8 @@ release_job:
   only:
     - master
   script:
-    - apt-get update && apt-get install make
-    - DOCKER_TAG=$CI_BUILD_REF make image
+    - docker build --force-rm -t $IMAGE:${CI_COMMIT_SHA} .
     - docker login --username=$DOCKER_USER --password=$DOCKER_PASS $DOCKER_REGISTRY
-    - docker tag $IMAGE:${CI_BUILD_REF} $IMAGE:latest
+    - docker tag $IMAGE:${CI_COMMIT_SHA} $IMAGE:latest
     - docker push $IMAGE:latest
-    - docker push $IMAGE:${CI_BUILD_REF}
+    - docker push $IMAGE:${CI_COMMIT_SHA}

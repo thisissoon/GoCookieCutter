@@ -1,16 +1,12 @@
-// Go Application Entrypoint
-
 package main
 
 import (
-	"os"
-	"{{ cookiecutter.project_name|lower }}/cli"
-	"{{ cookiecutter.project_name|lower }}/logger"
+	"{{cookiecutter.project_name}}/cli"
+	"{{cookiecutter.project_name}}/log"
 )
 
 func main() {
 	if err := cli.Execute(); err != nil {
-		logger.Error("Failed to start: %s", err)
-		os.Exit(1)
+		log.WithError(err).Error("application execution error")
 	}
 }

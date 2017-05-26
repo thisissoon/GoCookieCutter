@@ -1,0 +1,18 @@
+#
+# Dockerfile for building go applications
+#
+
+# Small, thin, simple
+FROM golang:{{cookiecutter.go_version|default('1.8')}}-alpine
+
+# Install build dependency packages
+RUN apk update && apk add make git {{cookiecutter.onbuild_pkgs}}
+
+# Working Dir
+WORKDIR /go/src/{{cookiecutter.project_name}}
+
+# Volume
+VOLUME ["/go/src/{{cookiecutter.project_name}}"]
+
+# Default entry point
+ENTRYPOINT ["make"]

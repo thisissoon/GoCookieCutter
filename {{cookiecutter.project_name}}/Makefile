@@ -1,67 +1,57 @@
-#
-# Application Makefile
-#
+# Build Variables
+BUILD_TIME      ?= $(shell date +%s)
+BUILD_VERSION   ?= $(shell git rev-parse HEAD)
 
-VERSION			?= $(shell git rev-parse --short HEAD)
-BUILD_DIR		?= ./.build
-BUILD_NAME		?= {{ cookiecutter.project_name }}
-BUILD_FLAGS		?= -ldflags "-X {{ cookiecutter.project_name }}/config.version=${VERSION}"
-DOCKER_IMAGE	?= {{ cookiecutter.docker_image_name }}
-DOCKER_TAG		?= latest
-TEST_VERBOSE	?= 0
-TEST_COVERAGE	?= 0
+# Docker Configuration
+DOCKER_IMAGE    ?= {{cookiecutter.docker_image}}
+DOCKER_TAG      ?= latest
 
-#
-# Testing
-#
+# Go Compilation Flags
+GOOUTDIR        ?= .
+GOOS            ?=
+GOARCH          ?=
+CGO_ENABLED     ?= 0
 
-test: deps
-ifeq ($(TEST_VERBOSE),1)
-ifeq ($(TEST_COVERAGE),1)
-	./test.sh -v --html
-else
-	./test.sh -v
-endif
-else
-ifeq ($(TEST_COVERAGE),1)
-	./test.sh --html
-else
-	./test.sh
+# Bin Name
+BIN_NAME        ?= {{cookiecutter.project_name}}
+BIN_SUFFIX      ?=
+ifneq ($(GOOS),)
+ifneq ($(GOARCH),)
+BIN_SUFFIX      = .$(GOOS)-$(GOARCH)
 endif
 endif
 
-#
-# Build all binaries
-#
+# LDFlags
+BUILD_TIME_LDFLAG       ?= -X {{cookiecutter.project_name}}/app.timestamp=$(BUILD_TIME)
+BUILD_VERSION_LDFLAG    ?= -X {{cookiecutter.project_name}}/app.version=$(BUILD_VERSION)
+LDFLAGS                 ?= "$(BUILD_TIME_LDFLAG) $(BUILD_VERSION_LDFLAG)"
 
-all: deps test build_linux build_osx
+all: linux darwin
 
-deps:
-	govendor sync
+linux:
+	docker run --rm -it -e GOOS=linux -e GOARCH=amd64 -v $(PWD):/go/src/{{cookiecutter.project_name}} $(DOCKER_IMAGE):onbuild build
 
-#
-# Linux Build
-#
+darwin:
+	docker run --rm -it -e GOOS=darwin -e GOARCH=amd64 -v $(PWD):/go/src/{{cookiecutter.project_name}} $(DOCKER_IMAGE):onbuild build
 
-build_linux: build_linux64
+build:
+	GOOS=$(GOOS) \
+	GOARCH=$(GOARCH) \
+	CGO_ENABLED=$(CGO_ENABLED) \
+	go build \
+		-v \
+		-ldflags $(LDFLAGS) \
+		-o "$(GOOUTDIR)/$(BIN_NAME)$(BIN_SUFFIX)"
 
-build_linux64:
-	mkdir -p ${BUILD_DIR}/linux_amd64
-	GOOS=linux GOARCH=amd64 go build -o ${BUILD_DIR}/linux_amd64/$(BUILD_NAME) ${BUILD_FLAGS}
+test:
+	go test -race -v -cover $(shell go list ./... | grep -v ./vendor/)
 
-#
-# OSX Build
-#
-
-build_osx: build_osx64
-
-build_osx64:
-	mkdir -p ${BUILD_DIR}/darwin_amd64
-	GOOS=darwin GOARCH=amd64 go build -o ${BUILD_DIR}/darwin_amd64/$(BUILD_NAME) ${BUILD_FLAGS}
-
-#
-# Docker Images
-#
+coverage:
+	./coverage.sh
+	go tool cover -html=coverage.txt
 
 image:
-	docker build --build-arg BUILD_DIR=$(BUILD_DIR)/linux_amd64 --build-arg BUILD_NAME=$(BUILD_NAME) --force-rm -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
+	docker build --force-rm -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
+
+onbuild:
+	docker build --force-rm -f Dockerfile.onbuild -t $(DOCKER_IMAGE):onbuild .

@@ -1,3 +1,4 @@
+# OS
 .DS_Store
 
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
@@ -25,17 +26,13 @@ _testmain.go
 *.test
 *.prof
 
-# Build Directory
-.build/
-
-# Coverage Files
-.cover
-
-# Dependencies
-/vendor/*/*
-
-# go build binary
-{{ cookiecutter.project_name }}
+# Binaries
+/{{cookiecutter.project_name}}
+/{{cookiecutter.project_name}}.*
 
 # Developer
 .env
+
+# Coverage
+coverage.out
+coverage.txt
