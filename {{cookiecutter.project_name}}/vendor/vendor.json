@@ -1,5 +1,5 @@
 {
-	"comment": "{{cookiecutter.project_human_name}}",
+	"comment": "foo",
 	"ignore": "test",
 	"package": [
 		{
@@ -189,5 +189,5 @@
 			"revisionTime": "2017-04-07T17:21:22Z"
 		}
 	],
-	"rootPath": "{{cookiecutter.project_name}}"
+	"rootPath": "foo"
 }
