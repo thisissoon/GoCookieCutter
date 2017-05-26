@@ -3,8 +3,10 @@
     "project_name": null,
     "project_human_name": null,
     "description": null,
-    "docker_image_name": null,
+    "docker_image": null,
     "git_clone_url": null,
-    "restapi": ["yes", "no"],
-    "redis": ["yes", "no"]
+
+    "go_version": "1.8",
+    "alpine_version": "3.5",
+    "onbuild_pkgs": null,
 }
