@@ -1,0 +1,50 @@
+#
+# GitLab CI Configuration
+#
+
+# Environment Variables
+variables:
+  IMAGE: {{cookiecutter.docker_image}}
+  SRC: src/{{cookiecutter.project_name}}
+
+# Build Stages
+stages:
+  - test
+  - build
+  - release
+
+# Builds and Tests the Application
+test_job:
+  stage: test
+  image: golang:{{cookiecutter.go_version}}-alpine
+  script:
+    - apk update && apk add make bash
+    - mkdir -p $GOPATH/src; ln -s $CI_PROJECT_DIR $GOPATH/$SRC; cd $GOPATH/$SRC
+    - make test
+
+# Build linux binaries
+build_job:
+  stage: build
+  only:
+    - master
+  image: golang:{{cookiecutter.go_version}}-alpine
+  artifacts:
+    expire_in: 24h
+    paths:
+      - ./{{cookiecutter.project_name}}.linux-amd64
+  script:
+    - apk update && apk add make bash
+    - mkdir -p $GOPATH/src; ln -s $CI_PROJECT_DIR $GOPATH/$SRC; cd $GOPATH/$SRC
+    - VERSION=$CI_COMMIT_SHA make linux64
+
+# Release Job
+release_job:
+  stage: release
+  only:
+    - master
+  script:
+    - docker build --force-rm -t $IMAGE:${CI_COMMIT_SHA} .
+    - docker login --username=$DOCKER_USER --password=$DOCKER_PASS $DOCKER_REGISTRY
+    - docker tag $IMAGE:${CI_COMMIT_SHA} $IMAGE:latest
+    - docker push $IMAGE:latest
+    - docker push $IMAGE:${CI_COMMIT_SHA}
