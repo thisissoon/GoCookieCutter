@@ -16,9 +16,8 @@ stages:
 # Builds and Tests the Application
 test_job:
   stage: test
-  image: golang:{{cookiecutter.go_version}}-alpine
+  image: golang:{{cookiecutter.go_version}}
   script:
-    - apk update && apk add make bash
     - mkdir -p $GOPATH/src; ln -s $CI_PROJECT_DIR $GOPATH/$SRC; cd $GOPATH/$SRC
     - make test
 
@@ -27,15 +26,14 @@ build_job:
   stage: build
   only:
     - master
-  image: golang:{{cookiecutter.go_version}}-alpine
   artifacts:
     expire_in: 24h
     paths:
       - ./{{cookiecutter.project_name}}.linux-amd64
   script:
-    - apk update && apk add make bash
-    - mkdir -p $GOPATH/src; ln -s $CI_PROJECT_DIR $GOPATH/$SRC; cd $GOPATH/$SRC
-    - VERSION=$CI_COMMIT_SHA make linux64
+    - apt-get update && apt-get install make
+    - make onbuild
+    - make linux
 
 # Release Job
 release_job:
