@@ -7,5 +7,9 @@
     "go_version": "1.8",
     "alpine_version": "3.5",
     "onbuild_pkgs": "",
-    "local_config_path": ""
+    "local_config_path": "",
+
+    "_copy_without_render": [
+        "*vendor"
+    ]
 }
