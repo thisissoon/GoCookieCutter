@@ -55,3 +55,6 @@ image:
 
 onbuild:
 	docker build --force-rm -f Dockerfile.onbuild -t $(DOCKER_IMAGE):onbuild .
+
+apib:
+	docker run -v $(shell pwd)/docs:/docs -t christianbladescb/aglio:latest -i /docs/{{cookiecutter.project_name}}.apib -o /docs/{{cookiecutter.project_name}}.html
