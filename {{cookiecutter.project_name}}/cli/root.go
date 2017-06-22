@@ -2,6 +2,7 @@ package cli
 
 import (
 	"{{cookiecutter.project_name}}/app"
+	"{{cookiecutter.project_name}}/build"
 	"{{cookiecutter.project_name}}/config"
 	"{{cookiecutter.project_name}}/log"
 
@@ -35,8 +36,8 @@ var rootCmd = &cobra.Command{
 		})
 		// Always log these fields
 		l.PersistentFields(logrus.Fields{
-			"version":   app.Version(),
-			"buildTime": app.BuildTime(),
+			"version":   build.Version(),
+			"buildTime": build.BuildTime(),
 		})
 		// Set global logger
 		log.SetGlobalLogger(l)
