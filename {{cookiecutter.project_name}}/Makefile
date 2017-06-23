@@ -43,6 +43,9 @@ build:
 		-ldflags $(LDFLAGS) \
 		-o "$(GOOUTDIR)/$(BIN_NAME)$(BIN_SUFFIX)"
 
+run:
+	go run main.go
+
 test:
 	go test -race -v -cover $(shell go list ./... | grep -v ./vendor/)
 
