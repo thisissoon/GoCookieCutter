@@ -22,14 +22,16 @@ endif
 endif
 
 # LDFlags
-BUILD_TIME_LDFLAG       ?= -X {{cookiecutter.project_name}}/app.timestamp=$(BUILD_TIME)
-BUILD_VERSION_LDFLAG    ?= -X {{cookiecutter.project_name}}/app.version=$(BUILD_VERSION)
+BUILD_TIME_LDFLAG       ?= -X {{cookiecutter.project_name}}/build.timestamp=$(BUILD_TIME)
+BUILD_VERSION_LDFLAG    ?= -X {{cookiecutter.project_name}}/build.version=$(BUILD_VERSION)
 LDFLAGS                 ?= "$(BUILD_TIME_LDFLAG) $(BUILD_VERSION_LDFLAG)"
+
+.PHONY: build
 
 all: linux darwin
 
 linux:
-	docker run --rm -it -e GOOS=linux -e GOARCH=amd64 -v $(PWD):/go/src/{{cookiecutter.project_name}} $(DOCKER_IMAGE):onbuild build
+	docker run --rm -e GOOS=linux -e GOARCH=amd64 -v $(PWD):/go/src/{{cookiecutter.project_name}} $(DOCKER_IMAGE):onbuild build
 
 darwin:
 	docker run --rm -it -e GOOS=darwin -e GOARCH=amd64 -v $(PWD):/go/src/{{cookiecutter.project_name}} $(DOCKER_IMAGE):onbuild build
@@ -42,6 +44,9 @@ build:
 		-v \
 		-ldflags $(LDFLAGS) \
 		-o "$(GOOUTDIR)/$(BIN_NAME)$(BIN_SUFFIX)"
+
+run:
+	go run main.go
 
 test:
 	go test -race -v -cover $(shell go list ./... | grep -v ./vendor/)
@@ -58,3 +63,6 @@ onbuild:
 
 apib:
 	docker run -v $(shell pwd)/docs:/docs -t christianbladescb/aglio:latest -i /docs/{{cookiecutter.project_name}}.apib -o /docs/{{cookiecutter.project_name}}.html
+
+godoc:
+	godoc -http=:9000
