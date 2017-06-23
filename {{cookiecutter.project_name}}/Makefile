@@ -22,8 +22,8 @@ endif
 endif
 
 # LDFlags
-BUILD_TIME_LDFLAG       ?= -X {{cookiecutter.project_name}}/app.timestamp=$(BUILD_TIME)
-BUILD_VERSION_LDFLAG    ?= -X {{cookiecutter.project_name}}/app.version=$(BUILD_VERSION)
+BUILD_TIME_LDFLAG       ?= -X {{cookiecutter.project_name}}/build.timestamp=$(BUILD_TIME)
+BUILD_VERSION_LDFLAG    ?= -X {{cookiecutter.project_name}}/build.version=$(BUILD_VERSION)
 LDFLAGS                 ?= "$(BUILD_TIME_LDFLAG) $(BUILD_VERSION_LDFLAG)"
 
 .PHONY: build
