@@ -29,7 +29,7 @@ LDFLAGS                 ?= "$(BUILD_TIME_LDFLAG) $(BUILD_VERSION_LDFLAG)"
 all: linux darwin
 
 linux:
-	docker run --rm -it -e GOOS=linux -e GOARCH=amd64 -v $(PWD):/go/src/{{cookiecutter.project_name}} $(DOCKER_IMAGE):onbuild build
+	docker run --rm -e GOOS=linux -e GOARCH=amd64 -v $(PWD):/go/src/{{cookiecutter.project_name}} $(DOCKER_IMAGE):onbuild build
 
 darwin:
 	docker run --rm -it -e GOOS=darwin -e GOARCH=amd64 -v $(PWD):/go/src/{{cookiecutter.project_name}} $(DOCKER_IMAGE):onbuild build
