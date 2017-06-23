@@ -26,6 +26,8 @@ BUILD_TIME_LDFLAG       ?= -X {{cookiecutter.project_name}}/app.timestamp=$(BUIL
 BUILD_VERSION_LDFLAG    ?= -X {{cookiecutter.project_name}}/app.version=$(BUILD_VERSION)
 LDFLAGS                 ?= "$(BUILD_TIME_LDFLAG) $(BUILD_VERSION_LDFLAG)"
 
+.PHONY: build
+
 all: linux darwin
 
 linux:
