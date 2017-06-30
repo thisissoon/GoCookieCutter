@@ -28,14 +28,6 @@ LDFLAGS                 ?= "$(BUILD_TIME_LDFLAG) $(BUILD_VERSION_LDFLAG)"
 
 .PHONY: build
 
-all: linux darwin
-
-linux:
-	docker run --rm -e GOOS=linux -e GOARCH=amd64 -v $(PWD):/go/src/{{cookiecutter.project_name}} $(DOCKER_IMAGE):onbuild build
-
-darwin:
-	docker run --rm -it -e GOOS=darwin -e GOARCH=amd64 -v $(PWD):/go/src/{{cookiecutter.project_name}} $(DOCKER_IMAGE):onbuild build
-
 build:
 	GOOS=$(GOOS) \
 	GOARCH=$(GOARCH) \
@@ -57,9 +49,6 @@ coverage:
 
 image:
 	docker build --force-rm -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
-
-onbuild:
-	docker build --force-rm -f Dockerfile.onbuild -t $(DOCKER_IMAGE):onbuild .
 
 apib:
 	docker run -v $(shell pwd)/docs:/docs -t christianbladescb/aglio:latest -i /docs/{{cookiecutter.project_name}}.apib -o /docs/{{cookiecutter.project_name}}.html
