@@ -1,0 +1,14 @@
+# Cobra for CLI building - does not yet have semantic versioning
+[[constraint]]
+  name = "github.com/spf13/cobra"
+  version = "v0.0.1"
+
+# Viper for Configuration via files, env vars and CLI flags
+[[constraint]]
+  name = "github.com/spf13/viper"
+  version = "v1.0.0"
+
+# Structured logging
+[[constraint]]
+  name = "github.com/rs/zerolog"
+  version = "v1.3.0"

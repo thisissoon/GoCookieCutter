@@ -1,15 +1,9 @@
 {
-    "project_name": null,
-    "project_human_name": null,
+    "name": null,
+    "project": null,
     "description": null,
+    "origin": null,
 
-    "docker_image": null,
-    "go_version": "1.8",
-    "alpine_version": "3.5",
-    "onbuild_pkgs": "",
-    "local_config_path": "",
-
-    "_copy_without_render": [
-        "*vendor"
-    ]
+    "image": null,
+    "go": "1.9.1"
 }
