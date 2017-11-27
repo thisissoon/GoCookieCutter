@@ -9,5 +9,6 @@ A Go project cookie cutter that gives us our standard Go project setup.
 3. Now use `cookiecutter`: `cookiecutter https://github.com/thisissoon/GoCookieCutter.git`
 4. Fill in the information `cookiecutter` asks you
 5. The project will now exist in the `src` directory, `cd` into it
-6. Sync dependencies `govendor sync`
-7. Read the `README.md`
+6. Install `dep`: https://github.com/golang/dep/releases
+7. Install dependencies (these live in the `vendor/` directory: `dep ensure`
+8. Read the `README.md`
