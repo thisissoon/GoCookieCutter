@@ -8,15 +8,22 @@ BUILD_TIME      ?= $(shell date +%s)
 BUILD_VERSION   ?= $(shell head -n 1 VERSION | tr -d "\n")
 BUILD_COMMIT    ?= $(shell git rev-parse HEAD)
 # LDFlags
-LDFLAGS ?= -d -a -w
+LDFLAGS ?= -d
 LDFLAGS += -X {{cookiecutter.name}}/config.timestamp=$(BUILD_TIME)
 LDFLAGS += -X {{cookiecutter.name}}/config.version=$(BUILD_VERSION)
 LDFLAGS += -X {{cookiecutter.name}}/config.commit=$(BUILD_COMMIT)
+# Go Build Flags
+GOBUILD_FLAGS ?= -tags netgo -installsuffix netgo
+GOBUILD_FLAGS += -installsuffix netgo
 # Docker Configuration
 DOCKER_IMAGE    ?= {{cookiecutter.image}}
 DOCKER_TAG      ?= latest
 # Binary Name
 BIN_NAME        ?= {{cookiecutter.name}}.$(BUILD_VERSION).$(GOOS)-$(GOARCH)
+# Compress Binry
+COMPRESS_BINARY ?= 0
+# Verbose build output
+GOBUILD_VERBOSE ?= 0
 
 .PHONY: build testdata
 
@@ -27,19 +34,29 @@ run:
 	{{cookiecutter.name|upper}}_TIMESTAMP=$(BUILD_TIME) \
 	go run ./main.go $(FLAGS)
 
+# Sets an extra build variables before compilation
+build-env:
+ifeq ($(COMPRESS_BINARY),1)
+	$(eval LDFLAGS += -a -w -s)
+endif
+
+# Go build fags
+build-flags:
+ifeq ($(GOBUILD_VERBOSE),1)
+	$(eval GOBUILD_FLAGS += -v)
+endif
+
 # Build a binary
 # Note: This builds a static binary and thus OS level dependant packages
 # are required for build to work
-build:
+build: build-env build-flags |
 	CGO_ENABLED=0 \
 	GOOS=$(GOOS) \
 	GOARCH=$(GOARCH) \
-	go build \
-		-v \
-		-tags netgo \
-		-installsuffix netgo \
+	go build $(GOBUILD_FLAGS) \
 		-ldflags "$(LDFLAGS)" \
-		-o "$(BIN_NAME)"
+		-o "$(BIN_NAME)" \
+		./cmd/{{cookiecutter.name}}
 
 # Build docker image
 image:
