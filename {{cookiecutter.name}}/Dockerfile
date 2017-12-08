@@ -7,7 +7,7 @@ ARG BUILD_COMMIT
 RUN apk update && apk add build-base libressl-dev
 WORKDIR /go/src/{{cookiecutter.name}}
 COPY ./ /go/src/{{cookiecutter.name}}
-RUN BIN_NAME=bin make build
+RUN COMPRESS_BINARY=1 GOBUILD_VERBOSE=1 BIN_NAME=bin make build
 
 # Stage 2 - Final Image
 # The application should be statically linked
