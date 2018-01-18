@@ -66,3 +66,11 @@ image:
 		--build-arg BUILD_VERSION=$(BUILD_VERSION) \
 		--build-arg BUILD_COMMIT=$(BUILD_COMMIT) \
 		-t $(DOCKER_IMAGE):$(DOCKER_TAG) .
+
+# Run test suite
+test:
+ifeq ("$(wildcard $(shell which gocov))","")
+	go get github.com/axw/gocov/gocov
+endif
+	ADMINAUTHENTICATOR_LOG_FORMAT=discard \
+		gocov test -v ./... | gocov report

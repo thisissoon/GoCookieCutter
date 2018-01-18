@@ -40,4 +40,4 @@ test:
   script:
     - apk update && apk add make build-base git
     - mkdir -p $GOPATH/src; ln -s $CI_PROJECT_DIR $GOPATH/$SRC; cd $GOPATH/$SRC
-    - go test -v ./...
+    - make test
