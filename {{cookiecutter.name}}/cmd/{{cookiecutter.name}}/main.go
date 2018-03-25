@@ -2,9 +2,11 @@ package main
 
 import (
 	"{{cookiecutter.name}}/config"
+	"{{cookiecutter.name}}/log"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"github.com/rs/zerolog"
 )
 
 // Application entry point
@@ -14,9 +16,15 @@ func main() {
 
 // New constructs a new CLI interface for execution
 func {{cookiecutter.name}}Cmd() *cobra.Command {
+	logger := log.Defaults(zerolog.New(log.Writer()))
 	cmd := &cobra.Command{
 		Use:   "{{cookiecutter.name}}",
-		Short: "Run the gRPC service for the Article Token Service",
+		Short: "Run the service",
+		PersistentPreRun: func(*cobra.Command, []string) {
+			if err := config.FromFile(); err != nil {
+				logger.Error().Err(err).Msg("failed to read configuration file")
+			}
+		},
 		Run:   {{cookiecutter.name}}Run,
 	}
 	// Global flags
