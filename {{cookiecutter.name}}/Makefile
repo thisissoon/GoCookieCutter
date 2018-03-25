@@ -72,5 +72,5 @@ test:
 ifeq ("$(wildcard $(shell which gocov))","")
 	go get github.com/axw/gocov/gocov
 endif
-	ADMINAUTHENTICATOR_LOG_FORMAT=discard \
+	{{cookiecutter.name|upper}}_LOG_FORMAT=discard \
 		gocov test -v ./... | gocov report
