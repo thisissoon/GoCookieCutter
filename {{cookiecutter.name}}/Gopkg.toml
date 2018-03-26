@@ -6,9 +6,9 @@
 # Viper for Configuration via files, env vars and CLI flags
 [[constraint]]
   name = "github.com/spf13/viper"
-  version = "v1.0.0"
+  version = "v1.0.2"
 
 # Structured logging
 [[constraint]]
   name = "github.com/rs/zerolog"
-  version = "v1.3.0"
+  version = "v1.5.0"

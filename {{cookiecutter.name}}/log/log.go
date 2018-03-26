@@ -1,22 +1,35 @@
 package log
 
 import (
+	"io"
+	"io/ioutil"
+	"os"
+
 	"{{cookiecutter.name}}/config"
 
 	"github.com/rs/zerolog"
 )
 
-// Default returns a new default logger setup from configuration
-func Default() zerolog.Logger {
-	f := map[string]interface{}{
+// Defaults add a set of default fields to a logger
+func Defaults(l zerolog.Logger) zerolog.Logger {
+	return l.With().Fields(map[string]interface{}{
 		"app":     config.APP_NAME,
-		"env":     config.Environment(),
 		"version": config.Version(),
 		"commit":  config.Commit(),
+	}).Timestamp().Logger()
+}
+
+// Writer returns an appropriate io.Writer for the
+// configured log format
+func Writer() io.Writer {
+	var w io.Writer = os.Stdout
+	switch config.LogFormat() {
+	case "console", "terminal":
+		w = zerolog.ConsoleWriter{
+			Out: os.Stdout,
+		}
+	case "discard":
+		w = ioutil.Discard
 	}
-	return zerolog.New(config.LogWriter()).
-		With().
-		Timestamp().
-		Fields(f).
-		Logger()
+	return w
 }
