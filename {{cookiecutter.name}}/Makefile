@@ -15,9 +15,11 @@ LDFLAGS += -X {{cookiecutter.name}}/config.commit=$(BUILD_COMMIT)
 # Go Build Flags
 GOBUILD_FLAGS ?= -tags netgo -installsuffix netgo
 GOBUILD_FLAGS += -installsuffix netgo
+{% if cookiecutter.image != "n" %}
 # Docker Configuration
 DOCKER_IMAGE    ?= {{cookiecutter.image}}
 DOCKER_TAG      ?= latest
+{% endif %}
 # Binary Name
 BIN_NAME        ?= {{cookiecutter.name}}.$(BUILD_VERSION).$(GOOS)-$(GOARCH)
 # Compress Binry
@@ -58,6 +60,7 @@ build: build-env build-flags |
 		-o "$(BIN_NAME)" \
 		./cmd/{{cookiecutter.name}}
 
+{% if cookiecutter.image != "n" %}
 # Build docker image
 image:
 	docker build \
@@ -67,6 +70,7 @@ image:
 		--build-arg BUILD_COMMIT=$(BUILD_COMMIT) \
 		-t $(DOCKER_IMAGE):$(DOCKER_TAG) .
 
+{% endif %}
 # Run test suite
 test:
 ifeq ("$(wildcard $(shell which gocov))","")
