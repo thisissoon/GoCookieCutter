@@ -2,8 +2,9 @@
     "name": null,
     "project": null,
     "description": null,
-    "origin": null,
-
-    "image": null,
-    "go": "1.9.1"
+    "origin": "n",
+    "image": "n",
+    "go": "1.10.1",
+    "use_ci": ["gitlab", "none"],
+    "configure_gopath": "y"
 }
