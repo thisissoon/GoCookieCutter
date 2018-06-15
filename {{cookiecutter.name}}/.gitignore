@@ -27,8 +27,7 @@ _testmain.go
 *.prof
 
 # Binaries
-/{{cookiecutter.name}}
-/{{cookiecutter.name}}.*
+/_bin
 
 # Developer
 .env

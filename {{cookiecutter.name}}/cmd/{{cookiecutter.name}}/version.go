@@ -1,10 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"time"
+	"os"
 
-	"{{cookiecutter.name}}/config"
+	"{{cookiecutter.pkg}}/internal/version"
 
 	"github.com/spf13/cobra"
 )
@@ -16,9 +15,7 @@ func versionCmd() *cobra.Command {
 		Use:   "version",
 		Short: "Prints the build version",
 		Run: func(*cobra.Command, []string) {
-			fmt.Println("Version:", config.Version())
-			fmt.Println("Commit:", config.Commit())
-			fmt.Println("Built:", config.BuildTimestamp().Format(time.RFC1123))
+			version.Write(os.Stdout)
 		},
 	}
 }

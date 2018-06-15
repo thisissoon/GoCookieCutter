@@ -2,9 +2,11 @@
     "name": null,
     "project": null,
     "description": null,
-    "origin": "n",
+    "origin": null,
     "image": "n",
-    "go": "1.10.1",
     "use_ci": ["gitlab", "none"],
-    "configure_gopath": "y"
+    "go": "1.10.1",
+    "gopath": "{{ cookiecutter.name }}",
+    "pkg": "{{ cookiecutter.origin }}",
+    "install": "y"
 }
