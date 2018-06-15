@@ -1,18 +1,28 @@
 # Stage 1 - Binary Build
 # BUILD_X args should be passed at build time as docker build args
 FROM golang:{{cookiecutter.go}}-alpine AS builder
-ARG BUILD_TIME
-ARG BUILD_VERSION
-ARG BUILD_COMMIT
+ARG BIN_VERSION
+ARG GIT_COMMIT
+ARG GIT_SHA
+ARG GIT_TAG
+ARG GIT_DIRTY
+ENV BIN_OUTDIR=
+ENV BIN_NAME={{cookiecutter.name}}
 RUN apk update && apk add build-base libressl-dev
-WORKDIR /go/src/{{cookiecutter.name}}
-COPY ./ /go/src/{{cookiecutter.name}}
-RUN COMPRESS_BINARY=1 GOBUILD_VERBOSE=1 BIN_NAME=bin make build
+WORKDIR /go/src/{{cookiecutter.pkg}}
+COPY ./ /go/src/{{cookiecutter.pkg}}
+RUN make static
 
 # Stage 2 - Final Image
 # The application should be statically linked
-FROM alpine:3.6
-RUN apk update && apk add --no-cache ca-certificates && rm -rf /var/cache/apk/*
-COPY --from=builder /go/src/{{cookiecutter.name}}/bin /usr/bin/{{cookiecutter.name}}
+FROM alpine:latest
+RUN apk update \
+	&& apk add --no-cache ca-certificates \
+	&& rm -rf /var/cache/apk/* \
+    && addgroup {{cookiecutter.name}} \
+	&& adduser -D -H -G {{cookiecutter.name}} {{cookiecutter.name}}
+COPY --from=builder /{{cookiecutter.name}} /usr/bin/{{cookiecutter.name}}
 VOLUME ["/etc/{{cookiecutter.name}}"]
 ENTRYPOINT ["{{cookiecutter.name}}"]
+EXPOSE 5000
+USER {{cookiecutter.name}}
