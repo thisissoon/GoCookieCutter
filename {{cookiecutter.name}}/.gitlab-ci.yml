@@ -1,6 +1,6 @@
 #
 # GitLab CI Script
-# Builds, Tests and Deploys the Google Pub/Sub Kafka Relay
+# Builds, Tests and Deploys the {{cookiecutter.project}} {{cookiecutter.name}}
 #
 
 #
@@ -13,7 +13,7 @@
 
 variables:
   DOCKER_IMAGE: {{cookiecutter.image}}
-  SRC: src/{{cookiecutter.name}}
+  SRC: src/{{cookiecutter.pkg}}
 
 #
 # Stages
