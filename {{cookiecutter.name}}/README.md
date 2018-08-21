@@ -14,3 +14,25 @@ These steps will describe how to setup this project for active development. Adju
 6. Install dependencies (these live in the `vendor/` directory: `dep ensure`
 7. Build: `make build`
 8. 🍻
+
+## Configuration
+
+Configuration can be provided through a toml file, these are loaded
+in order from:
+
+{% if cookiecutter.project is not none -%}
+- `/etc/{{cookiecutter.project}}/{{ cookiecutter.name }}.toml`
+- `$HOME/.config/{{cookiecutter.project}}/{{ cookiecutter.name }}.toml`
+{% else -%}
+- `/etc/{{cookiecutter.name}}/{{ cookiecutter.name }}.toml`
+- `$HOME/.config/{{ cookiecutter.name }}.toml`
+{% endif -%}
+
+Alternatively a config file path can be provided through the
+-c/--config CLI flag.
+
+### Example {{ cookiecutter.name }}.toml
+```toml
+[log]
+format = "json"  # [json|console|discard]
+```

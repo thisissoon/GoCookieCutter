@@ -33,16 +33,21 @@ func {{cookiecutter.name}}Cmd() *cobra.Command {
 			// Init config
 			if err := config.FromFile(); err != nil {
 				log.Error().Err(err).Msg("failed to read configuration file")
+			} else {
+				log.Debug().Msg(fmt.Sprintf("using config file: %s", viper.ConfigFileUsed()))
 			}
 			// Reconfigure logger with config
 			log = initLogger()
-			log.Debug().Msg(fmt.Sprintf("using config file: %s", viper.ConfigFileUsed()))
 		},
 		Run:   {{cookiecutter.name}}Run,
 	}
 	// Global flags
 	pflags := cmd.PersistentFlags()
-	pflags.StringP("config", "c", "", "path to configuration file (default is $HOME/.config/{{cookiecutter.name}}.yaml)")
+	{% if cookiecutter.project is not none -%}
+	pflags.StringP("config", "c", "", "path to configuration file (default is $HOME/.config/{{cookiecutter.project}}/{{cookiecutter.name}}.toml)")
+	{% else -%}
+	pflags.StringP("config", "c", "", "path to configuration file (default is $HOME/.config/{{cookiecutter.name}}.toml)")
+	{% endif -%}
 	pflags.String("log-format", "", "log format [console|json] (default is json)")
 	// Bind flags to config options
 	config.BindPFlags(map[string]*pflag.Flag{

@@ -22,13 +22,12 @@ func init() {
 	// Config file lookup locations
 	viper.SetConfigType("toml")
 	viper.SetConfigName("{{cookiecutter.name}}")
-	viper.AddConfigPath("$HOME/.config/")
 	{% if cookiecutter.project is not none -%}
-	viper.AddConfigPath("/etc/{{cookiecutter.project}}/{{cookiecutter.name}}")
-	viper.AddConfigPath("$HOME/.config/{{cookiecutter.project}}/{{cookiecutter.name}}")
+	viper.AddConfigPath("/etc/{{cookiecutter.project}}")
+	viper.AddConfigPath("$HOME/.config/{{cookiecutter.project}}")
 	{% else -%}
 	viper.AddConfigPath("/etc/{{cookiecutter.name}}")
-	viper.AddConfigPath("$HOME/.config/{{cookiecutter.name}}")
+	viper.AddConfigPath("$HOME/.config")
 	{% endif -%}
 	// Environment variables
 	viper.AutomaticEnv()
