@@ -39,5 +39,6 @@ test:
   image: golang:{{cookiecutter.go}}-alpine
   script:
     - apk update && apk add make build-base git
-    - mkdir -p $GOPATH/src; ln -s $CI_PROJECT_DIR $GOPATH/$SRC; cd $GOPATH/$SRC
+    - mkdir -p $GOPATH/$(echo $SRC | rev | cut -d'/' -f2- | rev) # mk src directory tree minus last path
+    - ln -s $CI_PROJECT_DIR $GOPATH/$SRC; cd $GOPATH/$SRC
     - make test
