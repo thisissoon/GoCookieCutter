@@ -5,8 +5,6 @@
     "origin": null,
     "image": "n",
     "use_ci": ["gitlab", "none"],
-    "go": "1.10.1",
-    "gopath": "{{ cookiecutter.name }}",
-    "pkg": "{{ cookiecutter.origin }}",
-    "install": "y"
+    "go": "1.11.1",
+    "module": "{{ cookiecutter.origin }}"
 }

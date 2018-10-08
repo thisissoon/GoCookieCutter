@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"{{cookiecutter.pkg}}/internal/version"
+	"{{cookiecutter.module}}/internal/version"
 
 	"github.com/spf13/cobra"
 )

@@ -1,6 +1,6 @@
 # General
 CMD      :=
-PKG      := {{cookiecutter.pkg}}
+PKG      := {{cookiecutter.module}}
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
 
 # Docker

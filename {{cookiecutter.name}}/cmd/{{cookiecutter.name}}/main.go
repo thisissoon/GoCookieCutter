@@ -5,8 +5,8 @@ import (
 	"io"
 	"os"
 
-	"{{cookiecutter.pkg}}/internal/config"
-	"{{cookiecutter.pkg}}/internal/version"
+	"{{cookiecutter.module}}/internal/config"
+	"{{cookiecutter.module}}/internal/version"
 
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
