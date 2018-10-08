@@ -51,7 +51,7 @@ func {{cookiecutter.name}}Cmd() *cobra.Command {
 	pflags.String("log-format", "", "log format [console|json] (default is json)")
 	// Bind flags to config options
 	config.BindPFlags(map[string]*pflag.Flag{
-		config.CONFIG_PATH_KEY: pflags.Lookup("config-file"),
+		config.CONFIG_PATH_KEY: pflags.Lookup("config"),
 		config.LOG_FORMAT_KEY:  pflags.Lookup("log-format"),
 	})
 	// Add sub commands
