@@ -1,8 +1,10 @@
 package config
 
 import (
+	"reflect"
 	"strings"
 
+	"github.com/rs/zerolog"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -10,18 +12,83 @@ import (
 // application name
 const APP_NAME = "{{cookiecutter.name}}"
 
-// configuration path viper lookup keys
-const (
-	CONFIG_PATH_KEY = "config"
-	ENVIORNMENT_KEY = "environment"
-)
+// Config stores configuration options set by configuration file or env vars
+type Config struct {
+	Log Log `mapstructure:"log"`
+}
 
-// init sets default configuration file settings such as path look
-// up values and environment variable binding
-func init() {
-	// Config file lookup locations
-	viper.SetConfigType("toml")
-	viper.SetConfigName("{{cookiecutter.name}}")
+// Log contains logging configuration
+type Log struct {
+	Console bool   `mapstructure:"console"`
+	Verbose bool   `mapstructure:"verbose"`
+	Level   string `mapstructure:"level"`
+}
+
+// An Option function can provide extra viper configuration
+type Option func(v *viper.Viper)
+
+// ConfigFile will override implict configuration file lookups and specify an
+// absolute path to a config file to load
+func ConfigFile(p string) Option {
+	return func(v *viper.Viper) {
+		if p != "" {
+			v.SetConfigFile(p)
+		}
+	}
+}
+
+// BindFlag returns an Option function allowing the binding of CLI flags to
+// confugration values
+func BindFlag(key string, flag *pflag.Flag) Option {
+	return func(v *viper.Viper) {
+		if flag != nil {
+			v.BindPFlag(key, flag)
+		}
+	}
+}
+
+// BindEnvs takes an interface and an optional slice of strings. It recurses
+// over the interface which should be a struct and extracts the mapstructure
+// tags, if the field is a struct the name of the field is appended to the
+// parts slice and BindEnvs is called again with the nested struct and the parts
+// slice, if it is not a struct the tag name is joined with the parts slice with
+// a . and viper.BindEnv is called with that name
+// This allows us to use environment variable bindings with viper.Unmarshal
+// which cannot use viper.AutomaticEnv
+func BindEnvs(v *viper.Viper, iface interface{}, parts ...string) {
+	ifv := reflect.ValueOf(iface)
+	ift := reflect.TypeOf(iface)
+	for i := 0; i < ift.NumField(); i++ {
+		val := ifv.Field(i)
+		tv, ok := ift.Field(i).Tag.Lookup("mapstructure")
+		if !ok {
+			continue
+		}
+		switch val.Kind() {
+		case reflect.Struct:
+			BindEnvs(v, val.Interface(), append(parts, tv)...)
+		default:
+			v.BindEnv(strings.Join(append(parts, tv), "."))
+		}
+	}
+}
+
+// Default returns a default configuration setup with sane defaults
+func Default() Config {
+	return Config{
+		Log{
+			Level: zerolog.InfoLevel.String(),
+		},
+	}
+}
+
+// New constructs a new Config instance
+func New(opts ...Option) (Config, error) {
+	c := Default()
+	v := viper.New()
+	v.SetConfigType("toml")
+	v.SetConfigName("{{cookiecutter.name}}")
+	// Set default config paths
 	{% if cookiecutter.project is not none -%}
 	viper.AddConfigPath("/etc/{{cookiecutter.project}}")
 	viper.AddConfigPath("$HOME/.config/{{cookiecutter.project}}")
@@ -29,32 +96,20 @@ func init() {
 	viper.AddConfigPath("/etc/{{cookiecutter.name}}")
 	viper.AddConfigPath("$HOME/.config")
 	{% endif -%}
-	// Environment variables
-	viper.AutomaticEnv()
-	viper.SetEnvPrefix("{{cookiecutter.name}}")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	// Environment variable binding
-	viper.SetDefault(ENVIORNMENT_KEY, "prod") // Default env - always assume prod
-	viper.BindEnv(CONFIG_PATH_KEY, ENVIORNMENT_KEY)
-}
-
-// FromFile reads configuration from a file, bind a CLI flag to
-func FromFile() error {
-	path := viper.GetString(CONFIG_PATH_KEY)
-	if path != "" {
-		viper.SetConfigFile(path)
+	v.SetEnvPrefix("{{cookiecutter.name}}")
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	for _, opt := range opts {
+		opt(v)
 	}
-	return viper.ReadInConfig()
-}
-
-// BindPFlag binds a config key to a CLI pflag
-func BindPFlags(flags map[string]*pflag.Flag) {
-	for k, f := range flags {
-		viper.BindPFlag(k, f)
+	BindEnvs(v, c)
+	switch err := v.ReadInConfig(); err.(type) {
+	case nil, viper.ConfigFileNotFoundError:
+		break
+	default:
+		return c, err
 	}
-}
-
-// Environment returns the current configured environment
-func Environment() string {
-	return viper.GetString(ENVIORNMENT_KEY)
+	if err := v.Unmarshal(&c); err != nil {
+		return c, err
+	}
+	return c, nil
 }

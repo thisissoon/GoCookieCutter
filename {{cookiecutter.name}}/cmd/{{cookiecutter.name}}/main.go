@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"os"
 
@@ -10,12 +9,13 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
 )
 
 // Default logger
 var log zerolog.Logger
+
+// Global app configuration
+var configMain config.Config
 
 // Application entry point
 func main() {
@@ -24,36 +24,35 @@ func main() {
 
 // New constructs a new CLI interface for execution
 func {{cookiecutter.name}}Cmd() *cobra.Command {
+	var configPath string
 	cmd := &cobra.Command{
 		Use:   "{{cookiecutter.name}}",
 		Short: "Run the service",
-		PersistentPreRun: func(*cobra.Command, []string) {
-			// Setup default logger
-			log = initLogger()
-			// Init config
-			if err := config.FromFile(); err != nil {
-				log.Error().Err(err).Msg("failed to read configuration file")
-			} else {
-				log.Debug().Msg(fmt.Sprintf("using config file: %s", viper.ConfigFileUsed()))
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			// Load config
+			configMain, err := config.New(
+				config.ConfigFile(configPath),
+				config.BindFlag("log.console", cmd.Flag("console")),
+				config.BindFlag("log.verbose", cmd.Flag("verbose")),
+			)
+			if err != nil {
+				return err
 			}
-			// Reconfigure logger with config
-			log = initLogger()
+			// Setup default logger
+			log = initLogger(configMain.Log)
+			return nil
 		},
 		Run:   {{cookiecutter.name}}Run,
 	}
 	// Global flags
 	pflags := cmd.PersistentFlags()
 	{% if cookiecutter.project is not none -%}
-	pflags.StringP("config", "c", "", "path to configuration file (default is $HOME/.config/{{cookiecutter.project}}/{{cookiecutter.name}}.toml)")
+	pflags.StringVarP(&configPath, "config", "c", "", "path to configuration file (default is $HOME/.config/{{cookiecutter.project}}/{{cookiecutter.name}}.toml)")
 	{% else -%}
-	pflags.StringP("config", "c", "", "path to configuration file (default is $HOME/.config/{{cookiecutter.name}}.toml)")
+	pflags.StringVarP(&configPath, "config", "c", "", "path to configuration file (default is $HOME/.config/{{cookiecutter.name}}.toml)")
 	{% endif -%}
-	pflags.String("log-format", "", "log format [console|json] (default is json)")
-	// Bind flags to config options
-	config.BindPFlags(map[string]*pflag.Flag{
-		config.CONFIG_PATH_KEY: pflags.Lookup("config"),
-		config.LOG_FORMAT_KEY:  pflags.Lookup("log-format"),
-	})
+	pflags.Bool("console", false, "use console log writer")
+	pflags.BoolP("verbose", "v", false, "verbose logging")
 	// Add sub commands
 	cmd.AddCommand(versionCmd())
 	return cmd
@@ -66,15 +65,25 @@ func {{cookiecutter.name}}Run(cmd *cobra.Command, _ []string) {
 }
 
 // initLogger constructs a default logger from config
-func initLogger() zerolog.Logger {
+func initLogger(c config.Log) zerolog.Logger {
+	// Set logger level field to severity for stack driver support
+	zerolog.LevelFieldName = "severity"
 	var w io.Writer = os.Stdout
-	switch config.LogFormat() {
-	case "console", "terminal":
+	if c.Console {
 		w = zerolog.ConsoleWriter{
 			Out: os.Stdout,
 		}
 	}
-	return zerolog.New(w).With().Fields(map[string]interface{}{
+	// Parse level from config
+	lvl, err := zerolog.ParseLevel(c.Level)
+	if err != nil {
+		lvl = zerolog.InfoLevel
+	}
+	// Override level with verbose
+	if c.Verbose {
+		lvl = zerolog.DebugLevel
+	}
+	return zerolog.New(w).Level(lvl).With().Fields(map[string]interface{}{
 		"version": version.Version,
 		"app":     config.APP_NAME,
 	}).Timestamp().Logger()

@@ -45,5 +45,6 @@ Alternatively a config file path can be provided through the
 #### Example {{ cookiecutter.name }}.toml
 ```toml
 [log]
-format = "json"  # [json|console|discard]
+console = true
+level = "debug"  # [debug|info|error]
 ```
