@@ -25,25 +25,27 @@ type Log struct {
 }
 
 // An Option function can provide extra viper configuration
-type Option func(v *viper.Viper)
+type Option func(v *viper.Viper) error
 
 // ConfigFile will override implict configuration file lookups and specify an
 // absolute path to a config file to load
 func ConfigFile(p string) Option {
-	return func(v *viper.Viper) {
+	return func(v *viper.Viper) error {
 		if p != "" {
 			v.SetConfigFile(p)
 		}
+		return nil
 	}
 }
 
 // BindFlag returns an Option function allowing the binding of CLI flags to
 // confugration values
 func BindFlag(key string, flag *pflag.Flag) Option {
-	return func(v *viper.Viper) {
-		if flag != nil {
-			v.BindPFlag(key, flag)
+	return func(v *viper.Viper) error {
+		if flag == nil {
+			return nil
 		}
+		return v.BindPFlag(key, flag)
 	}
 }
 
@@ -55,7 +57,7 @@ func BindFlag(key string, flag *pflag.Flag) Option {
 // a . and viper.BindEnv is called with that name
 // This allows us to use environment variable bindings with viper.Unmarshal
 // which cannot use viper.AutomaticEnv
-func BindEnvs(v *viper.Viper, iface interface{}, parts ...string) {
+func BindEnvs(v *viper.Viper, iface interface{}, parts ...string) error {
 	ifv := reflect.ValueOf(iface)
 	ift := reflect.TypeOf(iface)
 	for i := 0; i < ift.NumField(); i++ {
@@ -66,11 +68,18 @@ func BindEnvs(v *viper.Viper, iface interface{}, parts ...string) {
 		}
 		switch val.Kind() {
 		case reflect.Struct:
-			BindEnvs(v, val.Interface(), append(parts, tv)...)
+			err := BindEnvs(v, val.Interface(), append(parts, tv)...)
+			if err != nil {
+				return err
+			}
 		default:
-			v.BindEnv(strings.Join(append(parts, tv), "."))
+			err := v.BindEnv(strings.Join(append(parts, tv), "."))
+			if err != nil {
+				return err
+			}
 		}
 	}
+	return nil
 }
 
 // Default returns a default configuration setup with sane defaults
@@ -99,9 +108,15 @@ func New(opts ...Option) (Config, error) {
 	v.SetEnvPrefix("{{cookiecutter.name}}")
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	for _, opt := range opts {
-		opt(v)
+		err := opt(v)
+		if err != nil {
+			return c, err
+		}
 	}
-	BindEnvs(v, c)
+	err := BindEnvs(v, c)
+	if err != nil {
+		return c, err
+	}
 	switch err := v.ReadInConfig(); err.(type) {
 	case nil, viper.ConfigFileNotFoundError:
 		break

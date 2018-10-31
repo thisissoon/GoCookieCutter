@@ -15,22 +15,27 @@ import (
 var log zerolog.Logger
 
 // Global app configuration
-var configMain config.Config
+var cfg config.Config
 
 // Application entry point
 func main() {
-	{{cookiecutter.name}}Cmd().Execute()
+	cmd := {{cookiecutter.name|replace('-', '')}}Cmd()
+	if err := cmd.Execute(); err != nil {
+		log.Error().Err(err).Msg("exiting from fatal error")
+		os.Exit(1)
+	}
 }
 
 // New constructs a new CLI interface for execution
-func {{cookiecutter.name}}Cmd() *cobra.Command {
+func {{cookiecutter.name|replace('-', '')}}Cmd() *cobra.Command {
 	var configPath string
 	cmd := &cobra.Command{
 		Use:   "{{cookiecutter.name}}",
 		Short: "Run the service",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			// Load config
-			configMain, err := config.New(
+			var err error
+			cfg, err = config.New(
 				config.ConfigFile(configPath),
 				config.BindFlag("log.console", cmd.Flag("console")),
 				config.BindFlag("log.verbose", cmd.Flag("verbose")),
@@ -39,10 +44,10 @@ func {{cookiecutter.name}}Cmd() *cobra.Command {
 				return err
 			}
 			// Setup default logger
-			log = initLogger(configMain.Log)
+			log = initLogger(cfg.Log)
 			return nil
 		},
-		Run:   {{cookiecutter.name}}Run,
+		RunE:   {{cookiecutter.name|replace('-', '')}}Run,
 	}
 	// Global flags
 	pflags := cmd.PersistentFlags()
@@ -60,8 +65,8 @@ func {{cookiecutter.name}}Cmd() *cobra.Command {
 
 // {{cookiecutter.name}}Run is executed when the CLI executes
 // the {{cookiecutter.name}} command
-func {{cookiecutter.name}}Run(cmd *cobra.Command, _ []string) {
-	cmd.Help()
+func {{cookiecutter.name|replace('-', '')}}Run(cmd *cobra.Command, _ []string) error {
+	return cmd.Help()
 }
 
 // initLogger constructs a default logger from config
