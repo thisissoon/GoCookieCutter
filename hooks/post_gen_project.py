@@ -44,10 +44,8 @@ def remove_docker_files():
     """
     Removes files needed for docker if it isn't going to be used
     """
-    for filename in ['Dockerfile', '.dockerignore']:
-        os.remove(os.path.join(
-            PROJECT_DIRECTORY, filename
-        ))
+    for filename in ['./build/package', '.dockerignore']:
+        remove_file(filename)
 
 def init_git():
     """
@@ -73,7 +71,7 @@ if '{{ cookiecutter.use_ci}}'.lower() == 'gitlab':
     # do nothing
     pass
 else:
-    remove_file('.gitlab-ci.yml')
+    remove_file('./build/ci/.gitlab-ci.yml')
 
 # 3. Initialize Git (should be run after all files have been modified or deleted)
 if '{{ cookiecutter.origin }}'.lower() != 'n':

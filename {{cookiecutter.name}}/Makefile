@@ -13,7 +13,7 @@ GIT_TAG    ?= $(shell git describe --tags --abbrev=0 --exact-match 2>/dev/null)
 GIT_DIRTY  ?= $(shell test -n "`git status --porcelain`" && echo "dirty" || echo "clean")
 
 # Binary Name
-BIN_OUTDIR ?= ./_bin
+BIN_OUTDIR ?= ./build/bin
 BIN_NAME   ?= $(shell go env GOOS)-$(shell go env GOARCH)
 ifeq ("$(GIT_TAG)","")
 	BIN_VERSION = $(GIT_SHA)
@@ -76,6 +76,7 @@ image:
 		--build-arg GIT_SHA=$(GIT_SHA) \
 		--build-arg GIT_TAG=$(GIT_TAG) \
 		--build-arg GIT_DIRTY=$(GIT_DIRTY) \
+		-f ./build/package/Dockerfile \
 		-t $(DOCKER_REGISTRY):$(DOCKER_TAG) .
 {% endif %}
 

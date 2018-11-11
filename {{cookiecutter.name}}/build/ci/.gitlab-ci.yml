@@ -26,7 +26,6 @@ stages:
 #
 
 before_script:
-  - export VERSION=$(head -n 1 VERSION | tr -d "\n")
 
 #
 # Test Stages

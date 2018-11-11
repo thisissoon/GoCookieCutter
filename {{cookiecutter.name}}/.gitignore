@@ -27,7 +27,7 @@ _testmain.go
 *.prof
 
 # Binaries
-/_bin
+/build/bin
 
 # Developer
 .env

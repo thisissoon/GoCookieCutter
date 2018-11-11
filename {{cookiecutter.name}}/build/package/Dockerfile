@@ -6,7 +6,7 @@ ARG GIT_COMMIT
 ARG GIT_SHA
 ARG GIT_TAG
 ARG GIT_DIRTY
-ENV BIN_OUTDIR=
+ENV BIN_OUTDIR=./
 ENV BIN_NAME={{cookiecutter.name}}
 RUN apk update && apk add build-base git libressl-dev
 WORKDIR /usr/src/{{cookiecutter.name}}
@@ -21,7 +21,7 @@ RUN apk update \
 	&& rm -rf /var/cache/apk/* \
     && addgroup {{cookiecutter.name}} \
 	&& adduser -D -H -G {{cookiecutter.name}} {{cookiecutter.name}}
-COPY --from=builder /usr/src/{{cookiecutter.name}} /usr/bin/{{cookiecutter.name}}
+COPY --from=builder /usr/src/{{cookiecutter.name}}/{{cookiecutter.name}} /usr/bin/{{cookiecutter.name}}
 VOLUME ["/etc/{{cookiecutter.name}}"]
 ENTRYPOINT ["{{cookiecutter.name}}"]
 EXPOSE 5000
