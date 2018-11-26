@@ -14,15 +14,20 @@ GIT_DIRTY  ?= $(shell test -n "`git status --porcelain`" && echo "dirty" || echo
 
 # Binary Name
 BIN_OUTDIR ?= ./build/bin
-BIN_NAME   ?= $(shell go env GOOS)-$(shell go env GOARCH)
+BIN_NAME   ?= {{cookiecutter.name}}-$(shell go env GOOS)-$(shell go env GOARCH)
 ifeq ("$(GIT_TAG)","")
 	BIN_VERSION = $(GIT_SHA)
-	DOCKER_TAG  = latest
 endif
 BIN_VERSION ?= ${GIT_TAG}
-DOCKER_TAG  ?= ${GIT_TAG}
 
-# LDFlags LDFLAGS := -w -s
+# Docker Tag from Git
+DOCKER_TAG  ?= ${GIT_TAG}
+ifeq ("$(DOCKER_TAG)","")
+	DOCKER_TAG = $(GIT_SHA)
+endif
+
+# LDFlags
+# LDFLAGS := -w -s
 LDFLAGS += -X $(PKG)/internal/version.Timestamp=$(shell date +%s)
 LDFLAGS += -X $(PKG)/internal/version.GitCommit=${GIT_COMMIT}
 LDFLAGS += -X $(PKG)/internal/version.GitTreeState=${GIT_DIRTY}
