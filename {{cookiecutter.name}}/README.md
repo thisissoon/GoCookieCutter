@@ -31,13 +31,8 @@ go get url/to/origin
 Configuration can be provided through a toml file, these are loaded
 in order from:
 
-{% if cookiecutter.project is not none -%}
-- `/etc/{{cookiecutter.project}}/{{ cookiecutter.name }}.toml`
-- `$HOME/.config/{{cookiecutter.project}}/{{ cookiecutter.name }}.toml`
-{% else -%}
 - `/etc/{{cookiecutter.name}}/{{ cookiecutter.name }}.toml`
 - `$HOME/.config/{{ cookiecutter.name }}.toml`
-{% endif -%}
 
 Alternatively a config file path can be provided through the
 -c/--config CLI flag.

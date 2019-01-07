@@ -9,6 +9,8 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
+
+	configkit "go.soon.build/kit/config"
 )
 
 // Default logger
@@ -36,9 +38,9 @@ func {{cookiecutter.name|replace('-', '')}}Cmd() *cobra.Command {
 			// Load config
 			var err error
 			cfg, err = config.New(
-				config.ConfigFile(configPath),
-				config.BindFlag("log.console", cmd.Flag("console")),
-				config.BindFlag("log.verbose", cmd.Flag("verbose")),
+				configkit.WithFile(configPath),
+				configkit.BindFlag("log.console", cmd.Flag("console")),
+				configkit.BindFlag("log.verbose", cmd.Flag("verbose")),
 			)
 			if err != nil {
 				return err
@@ -51,11 +53,7 @@ func {{cookiecutter.name|replace('-', '')}}Cmd() *cobra.Command {
 	}
 	// Global flags
 	pflags := cmd.PersistentFlags()
-	{% if cookiecutter.project is not none -%}
-	pflags.StringVarP(&configPath, "config", "c", "", "path to configuration file (default is $HOME/.config/{{cookiecutter.project}}/{{cookiecutter.name}}.toml)")
-	{% else -%}
 	pflags.StringVarP(&configPath, "config", "c", "", "path to configuration file (default is $HOME/.config/{{cookiecutter.name}}.toml)")
-	{% endif -%}
 	pflags.Bool("console", false, "use console log writer")
 	pflags.BoolP("verbose", "v", false, "verbose logging")
 	// Add sub commands
