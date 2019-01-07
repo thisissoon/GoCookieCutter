@@ -91,5 +91,4 @@ test:
 ifeq ("$(wildcard $(shell which gocov))","")
 	go get github.com/axw/gocov/gocov
 endif
-	{{cookiecutter.name|upper}}_LOG_FORMAT=discard \
-		gocov test -v ${PKG_LIST} | gocov report
+	gocov test ${PKG_LIST} | gocov report
