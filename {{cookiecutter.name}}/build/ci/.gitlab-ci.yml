@@ -1,6 +1,6 @@
 #
 # GitLab CI Script
-# Builds, Tests and Deploys the {{cookiecutter.project}} {{cookiecutter.name}}
+# Builds, Tests and Deploys the {{cookiecutter.name}}
 #
 
 #
