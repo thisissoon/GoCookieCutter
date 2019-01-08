@@ -21,7 +21,7 @@ var cfg config.Config
 
 // Application entry point
 func main() {
-	cmd := {{cookiecutter.name|replace('-', '')}}Cmd()
+	cmd := {{cookiecutter.name|replace('-', '')|replace('.', '')}}Cmd()
 	if err := cmd.Execute(); err != nil {
 		log.Error().Err(err).Msg("exiting from fatal error")
 		os.Exit(1)
@@ -29,7 +29,7 @@ func main() {
 }
 
 // New constructs a new CLI interface for execution
-func {{cookiecutter.name|replace('-', '')}}Cmd() *cobra.Command {
+func {{cookiecutter.name|replace('-', '')|replace('.', '')}}Cmd() *cobra.Command {
 	var configPath string
 	cmd := &cobra.Command{
 		Use:   "{{cookiecutter.name}}",
@@ -49,7 +49,7 @@ func {{cookiecutter.name|replace('-', '')}}Cmd() *cobra.Command {
 			log = initLogger(cfg.Log)
 			return nil
 		},
-		RunE:   {{cookiecutter.name|replace('-', '')}}Run,
+		RunE:   {{cookiecutter.name|replace('-', '')|replace('.', '')}}Run,
 	}
 	// Global flags
 	pflags := cmd.PersistentFlags()
@@ -63,7 +63,7 @@ func {{cookiecutter.name|replace('-', '')}}Cmd() *cobra.Command {
 
 // {{cookiecutter.name}}Run is executed when the CLI executes
 // the {{cookiecutter.name}} command
-func {{cookiecutter.name|replace('-', '')}}Run(cmd *cobra.Command, _ []string) error {
+func {{cookiecutter.name|replace('-', '')|replace('.', '')}}Run(cmd *cobra.Command, _ []string) error {
 	return cmd.Help()
 }
 
