@@ -10,7 +10,12 @@ ENV BIN_OUTDIR=./
 ENV BIN_NAME={{cookiecutter.name}}
 RUN apk update && apk add build-base git libressl-dev
 WORKDIR /usr/src/{{cookiecutter.name}}
-COPY ./ /usr/src/{{cookiecutter.name}}
+# install dependencies in separate docker layer
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+# copy application source and build
+COPY ./ .
 RUN make static
 
 # Stage 2 - Final Image
