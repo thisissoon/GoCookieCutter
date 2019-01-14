@@ -34,6 +34,8 @@ func {{cookiecutter.name|replace('-', '')|replace('.', '')}}Cmd() *cobra.Command
 	cmd := &cobra.Command{
 		Use:   "{{cookiecutter.name}}",
 		Short: "Run the service",
+		SilenceErrors: true,
+		SilenceUsage:  true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			// Load config
 			var err error
