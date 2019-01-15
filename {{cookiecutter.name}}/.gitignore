@@ -31,3 +31,5 @@ _testmain.go
 
 # Developer
 .env
+.envrc
+.vscode
