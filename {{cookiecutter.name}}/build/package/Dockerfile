@@ -6,6 +6,8 @@ ARG GIT_COMMIT
 ARG GIT_SHA
 ARG GIT_TAG
 ARG GIT_DIRTY
+ARG GOPROXY
+ENV GOPROXY=$GOPROXY
 ENV BIN_OUTDIR=./
 ENV BIN_NAME={{cookiecutter.name}}
 RUN apk update && apk add build-base git libressl-dev

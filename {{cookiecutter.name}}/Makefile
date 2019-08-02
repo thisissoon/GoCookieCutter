@@ -81,6 +81,7 @@ image:
 		--build-arg GIT_SHA=$(GIT_SHA) \
 		--build-arg GIT_TAG=$(GIT_TAG) \
 		--build-arg GIT_DIRTY=$(GIT_DIRTY) \
+		--build-arg GOPROXY \
 		-f ./build/package/Dockerfile \
 		-t $(DOCKER_REGISTRY):$(DOCKER_TAG) .
 {% endif %}
