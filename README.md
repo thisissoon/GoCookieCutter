@@ -11,7 +11,7 @@ Powered by [Cookiecutter](https://github.com/audreyr/cookiecutter).
 
 ## Optional Features
  - Dockerfile for building go binary and dockerfile with final binary
- - Option of GitlabCI
+ - Basic Gitlab or Circle CI config
 
 ## Usage
 
