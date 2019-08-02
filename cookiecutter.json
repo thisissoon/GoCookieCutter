@@ -3,7 +3,7 @@
     "description": null,
     "origin": null,
     "image": "n",
-    "use_ci": ["gitlab", "none"],
+    "use_ci": ["gitlab", "circleci", "none"],
     "go": "1.11.1",
     "module": "{{ cookiecutter.origin }}"
 }

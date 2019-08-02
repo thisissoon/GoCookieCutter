@@ -67,11 +67,13 @@ if '{{ cookiecutter.image }}'.lower() == 'n':
     remove_docker_files()
 
 # 2. Remove unused CI choice
-if '{{ cookiecutter.use_ci}}'.lower() == 'gitlab':
-    # do nothing
-    pass
-else:
-    remove_file('./build/ci/.gitlab-ci.yml')
+CI_CONFIGS = {
+    'gitlab': './build/ci/.gitlab-ci.yml',
+    'circleci': './.circleci'
+}
+for ci in CI_CONFIGS:
+    if '{{ cookiecutter.use_ci}}'.lower() != ci:
+        remove_file(CI_CONFIGS[ci])
 
 # 3. Initialize Git (should be run after all files have been modified or deleted)
 if '{{ cookiecutter.origin }}'.lower() != 'n':
