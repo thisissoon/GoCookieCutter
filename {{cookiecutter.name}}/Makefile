@@ -92,4 +92,4 @@ test:
 ifeq ("$(wildcard $(shell which gocov))","")
 	go get github.com/axw/gocov/gocov
 endif
-	gocov test ${PKG_LIST} | gocov report
+	gocov test -race ${PKG_LIST} | gocov report

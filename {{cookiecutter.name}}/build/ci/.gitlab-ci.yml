@@ -34,7 +34,7 @@ before_script:
 # Runs tests in a go image
 test:
   stage: test
-  image: golang:{{cookiecutter.go}}-alpine
+  image: golang:{{cookiecutter.go}}-stretch # using debian to support go race detector
   script:
     - apk update && apk add make build-base git
     - make test
