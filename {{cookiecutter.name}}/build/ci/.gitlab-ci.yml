@@ -45,9 +45,9 @@ lint:
   image: golang:{{cookiecutter.go}}-alpine
   variables:
     GOLANGCILINT_VERSION: v1.21.0
-    GOLANGCILINT_TIMEOUT: 5m
   script:
     - apk update && apk add build-base git
     - go get
     - wget -O - -q https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s ${GOLANGCILINT_VERSION}
-    - ./bin/golangci-lint run --timeout ${GOLANGCILINT_TIMEOUT}
+    - ./bin/golangci-lint run
+
