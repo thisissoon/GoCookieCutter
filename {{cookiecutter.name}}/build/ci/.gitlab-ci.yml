@@ -22,12 +22,6 @@ stages:
   - test
 
 #
-# Common tasks to run for all stages
-#
-
-before_script:
-
-#
 # Test Stages
 #
 
@@ -51,3 +45,18 @@ lint:
     - go get
     - wget -O - -q https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s ${GOLANGCILINT_VERSION}
     - ./bin/golangci-lint run --timeout ${GOLANGCILINT_TIMEOUT}
+
+# Runs dependency vetting
+depcheck:
+  stage: test
+  image: golang:{{cookiecutter.go}}-buster
+  variables:
+    NANCY_VERSION: v0.1.17
+  allow_failure: true
+  script:
+    - apt-get update && apt-get install -y build-essential git
+    - go get
+    # https://github.com/sonatype-nexus-community/nancy
+    - wget -O /usr/local/bin/nancy https://github.com/sonatype-nexus-community/nancy/releases/download/${NANCY_VERSION}/nancy-linux.amd64-${NANCY_VERSION}
+    - chmod +x /usr/local/bin/nancy
+    - nancy go.sum
