@@ -20,3 +20,12 @@ jobs:
       - run:
           name: Test
           command: make test
+      - run:
+          name: Vetting dependencies
+          # https://github.com/sonatype-nexus-community/nancy
+          command: |
+            apt-get update && apt-get install -y build-essential git
+            go get
+            wget -O /usr/local/bin/nancy https://github.com/sonatype-nexus-community/nancy/releases/download/v0.1.17/nancy-linux.amd64-v0.1.17
+            chmod +x /usr/local/bin/nancy
+            nancy go.sum
