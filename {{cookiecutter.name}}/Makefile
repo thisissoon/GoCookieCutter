@@ -54,7 +54,7 @@ static: CGO = 0
 static: GOBUILDFLAGS += -a
 static: GOBUILDFLAGS += -tags netgo -installsuffix netgo
 static: GOBUILDFLAGS += -installsuffix netgo
-static: LDFLAGS += -a -extldflags "-static"
+static: LDFLAGS += -extldflags "-static"
 static: build
 
 # Build a binary
