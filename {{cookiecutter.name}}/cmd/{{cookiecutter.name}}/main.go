@@ -32,8 +32,8 @@ func main() {
 func {{cookiecutter.name|replace('-', '')|replace('.', '')}}Cmd() *cobra.Command {
 	var configPath string
 	cmd := &cobra.Command{
-		Use:   "{{cookiecutter.name}}",
-		Short: "Run the service",
+		Use:           "{{cookiecutter.name}}",
+		Short:         "Run the service",
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -90,6 +90,6 @@ func initLogger(c config.Log) zerolog.Logger {
 	}
 	return zerolog.New(w).Level(lvl).With().Fields(map[string]interface{}{
 		"version": version.Version,
-		"app":     config.APP_NAME,
+		"app":     config.AppName,
 	}).Timestamp().Logger()
 }
