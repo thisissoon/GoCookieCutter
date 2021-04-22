@@ -6,7 +6,7 @@ import (
 )
 
 // application name
-const APP_NAME = "{{cookiecutter.name}}"
+const AppName = "{{cookiecutter.name}}"
 
 // Config stores configuration options set by configuration file or env vars
 type Config struct {
