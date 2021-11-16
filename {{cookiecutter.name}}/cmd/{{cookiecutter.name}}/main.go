@@ -19,6 +19,13 @@ var log zerolog.Logger
 // Global app configuration
 var cfg config.Config
 
+// Default log config
+var defaultLog = config.Log{
+	Console: false,
+	Verbose: false,
+	Level:   zerolog.LevelDebugValue,
+}
+
 // Application entry point
 func main() {
 	cmd := {{cookiecutter.name|replace('-', '')|replace('.', '')}}Cmd()
@@ -37,6 +44,8 @@ func {{cookiecutter.name|replace('-', '')|replace('.', '')}}Cmd() *cobra.Command
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			// setup logger to capture config errors
+			log = initLogger(defaultLog)
 			// Load config
 			var err error
 			cfg, err = config.New(
@@ -47,7 +56,7 @@ func {{cookiecutter.name|replace('-', '')|replace('.', '')}}Cmd() *cobra.Command
 			if err != nil {
 				return err
 			}
-			// Setup default logger
+			// Override logger with user config
 			log = initLogger(cfg.Log)
 			return nil
 		},
