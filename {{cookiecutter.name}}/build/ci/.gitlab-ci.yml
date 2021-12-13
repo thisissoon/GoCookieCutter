@@ -46,16 +46,11 @@ lint:
      - ./bin/golangci-lint run
 
 # Runs dependency vetting
+# https://github.com/sonatype-nexus-community/nancy
 depcheck:
   stage: test
-  image: golang:{{cookiecutter.go}}-buster
-  variables:
-    NANCY_VERSION: v0.1.17
+  image: sonatypecommunity/nancy:alpine
   allow_failure: true
   script:
-    - apt-get update && apt-get install -y build-essential git
-    - go mod download
-    # https://github.com/sonatype-nexus-community/nancy
-    - wget -O /usr/local/bin/nancy https://github.com/sonatype-nexus-community/nancy/releases/download/${NANCY_VERSION}/nancy-linux.amd64-${NANCY_VERSION}
-    - chmod +x /usr/local/bin/nancy
-    - nancy go.sum
+    - apk add go
+    - go list -json -m all | nancy sleuth
