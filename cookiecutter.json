@@ -4,6 +4,7 @@
     "origin": null,
     "image": "n",
     "use_ci": ["gitlab", "circleci", "none"],
-    "go": "1.11.1",
+    "go": "1.17.10",
+    "golangcilint_version": "v1.45.0",
     "module": "{{ cookiecutter.origin }}"
 }
