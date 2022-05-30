@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	"{{cookiecutter.module}}/internal/version"
-
 	"github.com/spf13/cobra"
+
+	"{{cookiecutter.module}}/internal/version"
 )
 
 // versionCmd returns a CLI command that when run prints

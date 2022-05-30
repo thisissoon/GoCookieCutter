@@ -5,23 +5,31 @@ linters:
   enable:
     - megacheck
     - godox
-    - interfacer
     - goconst
     - whitespace
     - stylecheck
-    - golint
+    - revive
     - misspell
     - depguard
+  disable:
+    - scopelint
+    - maligned
+    - gci
   presets:
-    - bugs        # bodyclose, errcheck, gosec, govet, rowserrcheck, scopelint, staticcheck, typecheck
-    - complexity  # gocognit, gocyclo, nakedret
-    - format      # gofmt, goimports
-    - performance # bodyclose, maligned, prealloc, rowserrcheck
-    - unused      # deadcode, ineffassign, structcheck, unparam, unused, varcheck
+    - bugs # asciicheck, bidichk, bodyclose, contextcheck, durationcheck, errcheck, errchkjson, errorlint, exhaustive, exportloopref, gosec, govet, makezero, nilerr, noctx, rowserrcheck, scopelint, sqlclosecheck, staticcheck, typecheck
+    - complexity # cyclop, funlen, gocognit, gocyclo, maintidx, nestif
+    - format # decorder, gci, gofmt, gofumpt, goimports
+    - performance # bodyclose, maligned, noctx, prealloc
+    - unused # deadcode, ineffassign, structcheck, unparam, unused, varcheck
   fast: false
 
 # configuration for specific linters
 linters-settings:
+  funlen:
+    lines: 80
+  cyclop:
+    max-complexity: 12
+    skip-tests: true
   nakedret:
     max-func-lines: 0 # no naked returns
   goimports:
@@ -35,3 +43,10 @@ linters-settings:
       - github.com/satori/go.uuid
     packages-with-error-message:
       - github.com/satori/go.uuid: "Unsafe package, prefer github.com/gofrs/uuid"
+
+issues:
+  exclude-rules:
+    - path: '(.+)_test\.go'
+      linters:
+        - funlen
+        - gocyclo
