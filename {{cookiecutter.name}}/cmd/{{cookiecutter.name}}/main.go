@@ -23,7 +23,7 @@ var cfg config.Config
 var defaultLog = config.Log{
 	Console: false,
 	Verbose: false,
-	Level:   zerolog.LevelDebugValue,
+	Level:   zerolog.DebugLevel.String(),
 }
 
 // Application entry point
