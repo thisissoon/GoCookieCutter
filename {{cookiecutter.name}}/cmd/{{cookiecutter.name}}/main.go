@@ -4,13 +4,12 @@ import (
 	"io"
 	"os"
 
-	"{{cookiecutter.module}}/internal/config"
-	"{{cookiecutter.module}}/internal/version"
-
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
-
 	configkit "go.soon.build/kit/config"
+
+	"{{cookiecutter.module}}/internal/config"
+	"{{cookiecutter.module}}/internal/version"
 )
 
 // Default logger
@@ -23,7 +22,7 @@ var cfg config.Config
 var defaultLog = config.Log{
 	Console: false,
 	Verbose: false,
-	Level:   zerolog.LevelDebugValue,
+	Level:   zerolog.DebugLevel.String(),
 }
 
 // Application entry point
@@ -60,7 +59,7 @@ func {{cookiecutter.name|replace('-', '')|replace('.', '')}}Cmd() *cobra.Command
 			log = initLogger(cfg.Log)
 			return nil
 		},
-		RunE:   {{cookiecutter.name|replace('-', '')|replace('.', '')}}Run,
+		RunE: {{cookiecutter.name|replace('-', '')|replace('.', '')}}Run,
 	}
 	// Global flags
 	pflags := cmd.PersistentFlags()
